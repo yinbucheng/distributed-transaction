@@ -17,6 +17,7 @@ import java.util.concurrent.Executor;
 public class MstDbConnection implements Connection {
     private Logger logger = LoggerFactory.getLogger(MstDbConnection.class);
     private Connection connection;
+    private volatile boolean used = false;
 
     public MstDbConnection(Connection connection) {
         this.connection = connection;
@@ -294,11 +295,29 @@ public class MstDbConnection implements Connection {
 
     //正式提交
     public void realCommit() throws SQLException {
-        connection.commit();
+        if(!used) {
+            used = true;
+            logger.info(SystemConstant.PREV_LOG+" official commit");
+            connection.commit();
+        }
     }
 
     //正式回滚
     public void realRollback() throws SQLException {
-        connection.rollback();
+        if(!used){
+            used = true;
+            logger.info(SystemConstant.PREV_LOG+" official rollback");
+            connection.rollback();
+        }
+
+    }
+
+    //正式关闭
+    public void realClose() throws SQLException {
+        if(!used) {
+            used = true;
+            logger.info(SystemConstant.PREV_LOG+" official close");
+            connection.close();
+        }
     }
 }
