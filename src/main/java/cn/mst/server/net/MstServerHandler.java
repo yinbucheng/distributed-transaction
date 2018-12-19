@@ -40,10 +40,13 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
             switch (state){
                 case MstMessageBuilder.REGISTER:
                     MstServerAttributeHolder.addChannelHandlerContext(token,ctx);
+                    //这里通知客户端取消阻塞
                     ctx.writeAndFlush(MstMessageBuilder.registerOk(token));
                     break;
                 case MstMessageBuilder.ROLLBACK:
                     MstServerAttributeHolder.addRollBackFlag(token);
+                    //通知客户端取消阻塞
+                    ctx.writeAndFlush(MstMessageBuilder.registerOk(token));
                     break;
                 case MstMessageBuilder.FIN:
                     List<ChannelHandlerContext> ctxs = MstServerAttributeHolder.removeChannelHandlerContext(token);
