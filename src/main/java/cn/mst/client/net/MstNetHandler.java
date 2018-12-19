@@ -1,10 +1,21 @@
 package cn.mst.client.net;
 
+import cn.mst.client.base.LockCondition;
+import cn.mst.client.base.MstAttributeHolder;
+import cn.mst.client.base.MstDbConnection;
+import cn.mst.client.constant.SystemConstant;
 import cn.mst.common.MstMessageBuilder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * @ClassName MstNetHandler
@@ -13,9 +24,57 @@ import io.netty.handler.timeout.IdleStateEvent;
  **/
 public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
+    private Logger logger = LoggerFactory.getLogger(MstNetHandler.class);
+
+    private Executor executor = Executors.newFixedThreadPool(10);
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                handlerResponse(msg);
+            }
+        });
+    }
 
+    /**
+     * 处理服务端过来的信息
+     * @param msg
+     */
+    private void handlerResponse(String msg) {
+        Map<Integer, String> result = MstMessageBuilder.resolverMessage(msg);
+        for (Map.Entry<Integer, String> entry : result.entrySet()) {
+            Integer state = entry.getKey();
+            String token = entry.getValue();
+            switch (state) {
+                case MstMessageBuilder.REGISTER_OK:
+                    LockCondition condition = MstAttributeHolder.getLockByToken(token);
+                    condition.single();
+                    MstAttributeHolder.removeLock(token);
+                    break;
+                case MstMessageBuilder.ROLLBACK:
+                    MstDbConnection dbConnection = MstAttributeHolder.getConnByToken(token);
+                    try {
+                        dbConnection.realRollback();
+                    } catch (SQLException e) {
+                        logger.error(SystemConstant.PREV_LOG + token + " rollback fail");
+                        e.printStackTrace();
+                    }
+                    MstAttributeHolder.removeConn(token);
+                    break;
+                case MstMessageBuilder.COMMIT:
+                    MstDbConnection dbConnection2 = MstAttributeHolder.getConnByToken(token);
+                    try {
+                        dbConnection2.realCommit();
+                    } catch (SQLException e) {
+                        logger.error(SystemConstant.PREV_LOG + token + " commit fail");
+                        e.printStackTrace();
+                    }
+                    MstAttributeHolder.removeConn(token);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -26,7 +85,7 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        NetClient.start=false;
+        NetClient.start = false;
         NetClient.socketClient = null;
         super.channelInactive(ctx);
     }
@@ -34,10 +93,10 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         super.userEventTriggered(ctx, evt);
-        if(evt instanceof IdleStateEvent){
+        if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
-            if(event.state()== IdleState.WRITER_IDLE){
-                  ctx.writeAndFlush(MstMessageBuilder.ping());
+            if (event.state() == IdleState.WRITER_IDLE) {
+                ctx.writeAndFlush(MstMessageBuilder.ping());
             }
         }
     }
