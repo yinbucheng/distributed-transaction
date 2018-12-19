@@ -27,7 +27,7 @@ public class DbAspectJ {
               connection.setAutoCommit(false);
               MstDbConnection dbConnection = new MstDbConnection(connection);
               MstAttributeHolder.putTokenAndCon(token,dbConnection);
-              RollbackCoordinator.addConn(dbConnection);
+              RollbackCoordinator.addConn(token,dbConnection);
               return dbConnection;
           }
     }

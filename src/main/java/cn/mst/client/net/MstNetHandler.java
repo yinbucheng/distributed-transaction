@@ -57,6 +57,7 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
                     MstDbConnection dbConnection = MstAttributeHolder.getConnByToken(token);
                     try {
                         dbConnection.realRollback();
+                        dbConnection.realClose();
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " rollback fail");
                         e.printStackTrace();
@@ -67,6 +68,7 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
                     MstDbConnection dbConnection2 = MstAttributeHolder.getConnByToken(token);
                     try {
                         dbConnection2.realCommit();
+                        dbConnection2.realClose();
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " commit fail");
                         e.printStackTrace();
