@@ -44,32 +44,32 @@ public class NetClient {
             bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
-                       ch.pipeline().addLast("ping_pong",new IdleStateHandler(0,5,0));
-                       ch.pipeline().addLast("decode1",new LengthFieldPrepender(1024,4));
-                       ch.pipeline().addLast("decode2",new StringDecoder());
-                       ch.pipeline().addLast("myDecode",new MstNetHandler());
-                       ch.pipeline().addFirst("encode1",new LengthFieldBasedFrameDecoder(1024,0,4));
-                       ch.pipeline().addFirst("encode2",new StringEncoder());
+                    ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 5, 0));
+                    ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024, 0, 4));
+                    ch.pipeline().addLast("decode2", new StringDecoder());
+                    ch.pipeline().addLast("myDecode", new MstNetHandler());
+                    ch.pipeline().addFirst("encode1", new LengthFieldPrepender(1024, 4));
+                    ch.pipeline().addFirst("encode2", new StringEncoder());
                 }
             });
             ChannelFuture future = bootstrap.connect("127.0.0.1", 9090).sync();
             future.channel().closeFuture().addListener(new GenericFutureListener<Future<? super Void>>() {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
-                    if(future.isSuccess()){
+                    if (future.isSuccess()) {
                         start = true;
-                    }else{
-                        start= false;
+                    } else {
+                        start = false;
                     }
                 }
             }).sync();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             start = false;
-            logger.error(SystemConstant.PREV_LOG+e);
-        }finally {
-            if(!workGroup.isShutdown())
-            workGroup.shutdownGracefully();
+            logger.error(SystemConstant.PREV_LOG + e);
+        } finally {
+            if (!workGroup.isShutdown())
+                workGroup.shutdownGracefully();
         }
     }
 }
