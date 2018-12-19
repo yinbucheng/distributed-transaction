@@ -14,8 +14,6 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
-import java.util.concurrent.Executors;
-
 /**
  * 分布式事务服务端网络通信
  *
