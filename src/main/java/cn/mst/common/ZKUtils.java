@@ -1,10 +1,15 @@
 package cn.mst.common;
 
-import org.apache.zookeeper.*;
+import cn.mst.client.constant.SystemConstant;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 /**
  * @ClassName ZKUtils
@@ -12,6 +17,7 @@ import java.util.concurrent.Executors;
  * @Date 2018/12/19 20:02
  **/
 public class ZKUtils {
+    private static Logger logger = LoggerFactory.getLogger(ZKUtils.class);
 
     public static ZooKeeper newZkClient(String url, int timeout) {
         try {
@@ -32,10 +38,11 @@ public class ZKUtils {
 
     public static boolean createEphemeralNode(ZooKeeper zk,String path,byte[] data){
         try {
-            String result =  zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-            return false;
+            zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+            return true;
         } catch (Exception e){
-            throw new RuntimeException(e);
+            logger.error(SystemConstant.PREV_LOG+e);
+            return false;
         }
     }
 
@@ -44,6 +51,18 @@ public class ZKUtils {
             return zk.getChildren(path,true);
         } catch (Exception e){
             throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean exist(ZooKeeper zk,String path){
+        try {
+            Stat exists = zk.exists(path, true);
+            if(exists!=null)
+                return true;
+            return false;
+        } catch (Exception e){
+            logger.error(SystemConstant.PREV_LOG+e);
+            return false;
         }
     }
 }
