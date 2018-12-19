@@ -1,7 +1,9 @@
 package cn.mst.server.base;
 
+import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Mst服务端属性清理器
@@ -12,12 +14,18 @@ import java.util.concurrent.Executors;
 public class MstServerAttributeClean {
     private static Executor executor = Executors.newSingleThreadExecutor();
     private static final int size =240;
-    private static String[] tokens = new String[size];
+    private static LinkedBlockingQueue<String>[] tokens = new LinkedBlockingQueue[size];
     private static volatile int prev = size -1;
     private static volatile int cur = 0;
 
+    static {
+        for(int i=0;i<size;i++){
+            tokens[i]=new LinkedBlockingQueue<>();
+        }
+    }
+
     public static void addToken(String token){
-        tokens[prev]=token;
+        tokens[prev].add(token);
     }
 
     public static void work(){
@@ -25,11 +33,12 @@ public class MstServerAttributeClean {
             @Override
             public void run() {
                 for(int i=0;i<Integer.MAX_VALUE;i++){
-                    String token = tokens[cur];
-                    if(token!=null){
+                    Iterator<String> iterator = tokens[cur].iterator();
+                    while(iterator.hasNext()){
+                        String token = iterator.next();
                         MstServerAttributeHolder.removeChannelHandlerContext(token);
                         MstServerAttributeHolder.isRollBack(token);
-                        tokens[cur]=null;
+                        iterator.remove();
                     }
                     prev =cur;
                     cur=cur==size-1?0:cur+1;
