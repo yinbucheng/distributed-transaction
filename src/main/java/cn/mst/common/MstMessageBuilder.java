@@ -57,7 +57,7 @@ public class MstMessageBuilder {
 
     public static Map<Integer,String> resolverMessage(String content){
         if(content==null||content.equals(""))
-            throw new RuntimeException("内容异常");
+            throw new RuntimeException("content error");
         JSONObject parse = JSON.parseObject(content);
         Integer state = parse.getInteger("state");
         String token = parse.getString("token");
