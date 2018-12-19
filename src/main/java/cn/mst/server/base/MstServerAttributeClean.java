@@ -13,7 +13,7 @@ public class MstServerAttributeClean {
     private static volatile int cur = 0;
 
     public static void addToken(String token){
-        token[prev]=token;
+        tokens[prev]=token;
     }
 
     public static void work(){
