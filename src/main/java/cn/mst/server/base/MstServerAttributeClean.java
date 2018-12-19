@@ -1,5 +1,8 @@
 package cn.mst.server.base;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 /**
  * Mst服务端属性清理器
  * @ClassName MstServerAttributeClean
@@ -7,6 +10,7 @@ package cn.mst.server.base;
  * @Date 2018/12/19 19:31
  **/
 public class MstServerAttributeClean {
+    private static Executor executor = Executors.newSingleThreadExecutor();
     private static final int size =240;
     private static String[] tokens = new String[size];
     private static volatile int prev = size -1;
@@ -17,20 +21,26 @@ public class MstServerAttributeClean {
     }
 
     public static void work(){
-        for(int i=0;i<Integer.MAX_VALUE;i++){
-            String token = tokens[cur];
-            if(token!=null){
-                MstServerAttributeHolder.removeChannelHandlerContext(token);
-                MstServerAttributeHolder.isRollBack(token);
-                tokens[cur]=null;
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<Integer.MAX_VALUE;i++){
+                    String token = tokens[cur];
+                    if(token!=null){
+                        MstServerAttributeHolder.removeChannelHandlerContext(token);
+                        MstServerAttributeHolder.isRollBack(token);
+                        tokens[cur]=null;
+                    }
+                    prev =cur;
+                    cur=cur==size-1?0:cur+1;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-            prev =cur;
-            cur=cur==size-1?0:cur+1;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        });
+
     }
 }

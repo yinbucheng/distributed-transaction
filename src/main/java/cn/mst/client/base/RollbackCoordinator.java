@@ -26,6 +26,7 @@ public class RollbackCoordinator {
     private static Executor executor = Executors.newFixedThreadPool(10);
     private static volatile int pre =size-1;
     private static volatile int cur = 0;
+    private static Executor singleExecutor = Executors.newSingleThreadExecutor();
     static{
         for(int i=0;i<size;i++){
             rollbackQueue[i]=new LinkedBlockingQueue<>();
@@ -42,22 +43,28 @@ public class RollbackCoordinator {
      * 回滚协调器运行核心方法
      */
     public static void work(){
-        for(int i=0;i<Integer.MAX_VALUE;i++){
-            LinkedBlockingQueue<Map<String,MstDbConnection>> temp=rollbackQueue[cur];
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    executeRollBack(temp);
+        singleExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<Integer.MAX_VALUE;i++){
+                    LinkedBlockingQueue<Map<String,MstDbConnection>> temp=rollbackQueue[cur];
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            executeRollBack(temp);
+                        }
+                    });
+                    pre =cur;
+                    cur=cur==size-1?0:cur+1;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            });
-            pre =cur;
-            cur=cur==size-1?0:cur+1;
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
-        }
+        });
+
     }
 
     private static void executeRollBack(LinkedBlockingQueue<Map<String,MstDbConnection>> temp) {
