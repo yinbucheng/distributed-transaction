@@ -315,6 +315,7 @@ public class MstDbConnection implements Connection {
     //正式关闭
     public void realClose() throws SQLException {
         if(!used) {
+            MstDbConnectionLimit.decrementDbNumber();
             used = true;
             logger.info(SystemConstant.PREV_LOG+" official close");
             connection.close();

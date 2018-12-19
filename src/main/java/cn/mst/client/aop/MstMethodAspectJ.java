@@ -2,6 +2,7 @@ package cn.mst.client.aop;
 
 import cn.mst.client.base.LockCondition;
 import cn.mst.client.base.MstAttributeHolder;
+import cn.mst.client.base.MstDbConnectionLimit;
 import cn.mst.client.constant.SystemConstant;
 import cn.mst.client.net.NetClient;
 import cn.mst.common.MstMessageBuilder;
@@ -32,6 +33,10 @@ public class MstMethodAspectJ {
         if (token != null) {
             return joinPoint.proceed();
         }
+        if(MstDbConnectionLimit.isMaxDbNumber()){
+            throw new RuntimeException("mst db connection user out,please later try");
+        }
+
         //再从请求头中获取是否存在，这里表示不同服务调用A-B中不同方法
         token = (String) WebUtils.getRequest().getAttribute(SystemConstant.MST_TOKEN);
         MstAttributeHolder.putMstToken(token);

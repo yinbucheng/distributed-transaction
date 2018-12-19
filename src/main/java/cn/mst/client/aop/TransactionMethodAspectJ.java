@@ -2,6 +2,7 @@ package cn.mst.client.aop;
 
 import cn.mst.client.base.LockCondition;
 import cn.mst.client.base.MstAttributeHolder;
+import cn.mst.client.base.MstDbConnectionLimit;
 import cn.mst.client.constant.SystemConstant;
 import cn.mst.client.net.NetClient;
 import cn.mst.common.MstMessageBuilder;
@@ -35,6 +36,9 @@ public class TransactionMethodAspectJ {
         }
         if (!NetClient.start || NetClient.socketClient == null) {
             throw new RuntimeException("netclient start fail,please make sure netclient start");
+        }
+        if(MstDbConnectionLimit.isMaxDbNumber()){
+            throw new RuntimeException("mst db connection user out,please later try");
         }
         MstAttributeHolder.putMstToken(token);
         try {

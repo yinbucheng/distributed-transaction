@@ -2,6 +2,7 @@ package cn.mst.client.aop;
 
 import cn.mst.client.base.MstAttributeHolder;
 import cn.mst.client.base.MstDbConnection;
+import cn.mst.client.base.MstDbConnectionLimit;
 import cn.mst.client.base.RollbackCoordinator;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,6 +29,7 @@ public class DbAspectJ {
               MstDbConnection dbConnection = new MstDbConnection(connection);
               MstAttributeHolder.putTokenAndCon(token,dbConnection);
               RollbackCoordinator.addConn(token,dbConnection);
+              MstDbConnectionLimit.incrementDbNumber();
               return dbConnection;
           }
     }
