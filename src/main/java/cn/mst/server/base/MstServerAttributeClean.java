@@ -17,6 +17,7 @@ public class MstServerAttributeClean {
     private static LinkedBlockingQueue<String>[] tokens = new LinkedBlockingQueue[size];
     private static volatile int prev = size -1;
     private static volatile int cur = 0;
+    private static volatile boolean startFlag = false;
 
     static {
         for(int i=0;i<size;i++){
@@ -29,6 +30,7 @@ public class MstServerAttributeClean {
     }
 
     public static void work(){
+        startFlag = true;
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -52,4 +54,9 @@ public class MstServerAttributeClean {
         });
 
     }
+
+    public static boolean isStart(){
+        return startFlag;
+    }
+
 }

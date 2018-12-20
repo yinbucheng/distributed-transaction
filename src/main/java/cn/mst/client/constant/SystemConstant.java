@@ -8,4 +8,7 @@ package cn.mst.client.constant;
 public class SystemConstant {
     public final static String PREV_LOG ="------------mst log------------->";
     public final static String MST_TOKEN = "Microservice_Transaction";
+    public final static String ROOT_PATH ="microservice_transaction";
+    public final static String INSTANCES_PATH ="instances";
+    public final static String MASTER_PATH ="master";
 }

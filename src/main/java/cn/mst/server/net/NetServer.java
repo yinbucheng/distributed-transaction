@@ -13,6 +13,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.springframework.stereotype.Component;
 
 /**
  * 分布式事务服务端网络通信
@@ -21,6 +22,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * @Author buchengyin
  * @Date 2018/12/19 18:44
  **/
+@Component
 public class NetServer {
     private volatile boolean start = false;
 
