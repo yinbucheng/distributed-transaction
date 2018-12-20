@@ -1,9 +1,12 @@
 package cn.mst.server.net;
 
+import cn.mst.client.constant.SystemConstant;
 import cn.mst.common.MstMessageBuilder;
 import cn.mst.server.base.MstServerAttributeHolder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +19,11 @@ import java.util.concurrent.Executors;
  * @Date 2018/12/19 18:56
  **/
 public class MstServerHandler extends SimpleChannelInboundHandler<String> {
+    private Logger logger = LoggerFactory.getLogger(MstServerHandler.class);
     Executor executor = Executors.newFixedThreadPool(3);
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+        logger.debug(SystemConstant.PREV_LOG+msg);
           executor.execute(new Runnable() {
               @Override
               public void run() {
