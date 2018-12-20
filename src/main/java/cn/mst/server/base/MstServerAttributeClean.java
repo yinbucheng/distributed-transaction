@@ -28,7 +28,6 @@ public class MstServerAttributeClean {
         tokens[prev].add(token);
     }
 
-
     public static void work(){
         executor.execute(new Runnable() {
             @Override
