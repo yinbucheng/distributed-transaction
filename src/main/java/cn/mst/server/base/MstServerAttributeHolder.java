@@ -1,6 +1,7 @@
 package cn.mst.server.base;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.zookeeper.ZooKeeper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MstServerAttributeHolder {
     private static LinkedBlockingQueue<String> rollBack = new LinkedBlockingQueue<>();
     private static ConcurrentHashMap<String,List<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
+    private static volatile ZooKeeper zkClient;
 
     public static void addRollBackFlag(String token){
         rollBack.add(token);
@@ -36,5 +38,13 @@ public class MstServerAttributeHolder {
 
     public static List<ChannelHandlerContext> removeChannelHandlerContext(String token){
         return token_channels.remove(token);
+    }
+
+    public static void setZkClient(ZooKeeper zkClient){
+        MstServerAttributeHolder.zkClient = zkClient;
+    }
+
+    public static ZooKeeper getZkClient(){
+        return zkClient;
     }
 }
