@@ -23,7 +23,7 @@ public class StartStrategy {
 
     @Value("${mst.namespace}}")
     private String namespace;
-    @Value("${mst.server.port}}")
+    @Value("${mst.server.port}")
     private Integer port;
     @Autowired
     private NetServer server;
