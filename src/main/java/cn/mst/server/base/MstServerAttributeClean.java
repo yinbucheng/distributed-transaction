@@ -30,6 +30,8 @@ public class MstServerAttributeClean {
     }
 
     public static void work(){
+        if(startFlag)
+            return;
         startFlag = true;
         executor.execute(new Runnable() {
             @Override
