@@ -21,7 +21,7 @@ public class StartStrategy {
 
     private Logger logger = LoggerFactory.getLogger(StartStrategy.class);
 
-    @Value("${mst.namespace}}")
+    @Value("${mst.namespace}")
     private String namespace;
     @Value("${mst.server.port}")
     private Integer port;
