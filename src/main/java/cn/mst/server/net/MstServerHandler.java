@@ -23,7 +23,7 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
     Executor executor = Executors.newFixedThreadPool(3);
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        logger.debug(SystemConstant.PREV_LOG+msg);
+        logger.info(SystemConstant.PREV_LOG+msg);
           executor.execute(new Runnable() {
               @Override
               public void run() {
