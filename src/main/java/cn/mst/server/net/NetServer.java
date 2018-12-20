@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.LineEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.Future;
@@ -44,9 +46,9 @@ public class NetServer {
             bootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
-                   ch.pipeline().addLast("decoder1",new LengthFieldBasedFrameDecoder(1024,0,4,0,4));
+                   ch.pipeline().addLast("decoder1",new LineBasedFrameDecoder(1024));
                    ch.pipeline().addLast("decoder2",new StringDecoder());
-                   ch.pipeline().addFirst("encoder1",new LengthFieldPrepender(4));
+                   ch.pipeline().addFirst("encoder1",new LineEncoder());
                    ch.pipeline().addFirst("encoder2",new StringEncoder());
                    ch.pipeline().addLast("decoder3",new MstServerHandler());
                 }

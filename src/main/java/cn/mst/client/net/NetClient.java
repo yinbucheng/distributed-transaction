@@ -8,8 +8,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.LineEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -18,6 +18,8 @@ import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 这个类负责服务之间通信
@@ -46,11 +48,11 @@ public class NetClient {
             bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
-                    ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 5, 0));
-                    ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024, 0, 4,0,4));
+                    ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 5, 0,TimeUnit.SECONDS));
+                    ch.pipeline().addLast("decode1", new LineBasedFrameDecoder(1024));
                     ch.pipeline().addLast("decode2", new StringDecoder());
                     ch.pipeline().addLast("myDecode", new MstNetHandler());
-                    ch.pipeline().addFirst("encode1", new LengthFieldPrepender(4));
+                    ch.pipeline().addFirst("encode1", new LineEncoder());
                     ch.pipeline().addFirst("encode2", new StringEncoder());
                 }
             });
