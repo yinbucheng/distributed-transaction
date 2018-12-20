@@ -59,6 +59,6 @@ public class MstAttributeHolder {
     }
 
     public static ZooKeeper getZkClient(){
-        return MstAttributeHolder.getZkClient();
+        return zkClient;
     }
 }
