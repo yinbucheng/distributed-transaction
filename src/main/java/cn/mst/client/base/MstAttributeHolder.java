@@ -1,5 +1,7 @@
 package cn.mst.client.base;
 
+import org.apache.zookeeper.ZooKeeper;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -14,6 +16,7 @@ public class MstAttributeHolder {
     //事务唯一标示和数据链接对应关系
     private static ConcurrentHashMap<String,MstDbConnection> token_conn = new ConcurrentHashMap();
     private static ConcurrentHashMap<String,LockCondition> token_lock = new ConcurrentHashMap<>();
+    private static volatile ZooKeeper zkClient;
 
     public static void putMstToken(String mstToken){
         uniqueMst.set(mstToken);
@@ -49,5 +52,13 @@ public class MstAttributeHolder {
 
     public static void removeLock(String token){
         token_lock.remove(token);
+    }
+
+    public static void setZkClient(ZooKeeper zkClient){
+        MstAttributeHolder.zkClient =zkClient;
+    }
+
+    public static ZooKeeper getZkClient(){
+        return MstAttributeHolder.getZkClient();
     }
 }

@@ -32,7 +32,7 @@ public class NetClient {
     //用于通信的套接字
     public static volatile ChannelHandlerContext socketClient;
 
-    public void start() {
+    public void startWork(String ip,int port) {
         if (start)
             return;
         NioEventLoopGroup workGroup = new NioEventLoopGroup();
@@ -52,7 +52,7 @@ public class NetClient {
                     ch.pipeline().addFirst("encode2", new StringEncoder());
                 }
             });
-            ChannelFuture future = bootstrap.connect("127.0.0.1", 9090).sync();
+            ChannelFuture future = bootstrap.connect(ip, port).sync();
             future.channel().closeFuture().addListener(new GenericFutureListener<Future<? super Void>>() {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
