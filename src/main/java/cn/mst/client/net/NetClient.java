@@ -59,6 +59,7 @@ public class NetClient {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (future.isSuccess()) {
+                        logger.info(SystemConstant.PREV_LOG+" net client start success");
                         start = true;
                     } else {
                         start = false;

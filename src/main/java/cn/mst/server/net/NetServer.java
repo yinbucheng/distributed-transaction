@@ -1,5 +1,6 @@
 package cn.mst.server.net;
 
+import cn.mst.client.constant.SystemConstant;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -13,6 +14,8 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NetServer {
     private volatile boolean start = false;
+    private Logger logger = LoggerFactory.getLogger(NetServer.class);
 
     public void start(int port) {
         if (start)
@@ -53,6 +57,8 @@ public class NetServer {
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (!future.isSuccess()) {
                         start = false;
+                    }else{
+                        logger.info(SystemConstant.PREV_LOG+" net server start success");
                     }
                 }
             }).sync();
