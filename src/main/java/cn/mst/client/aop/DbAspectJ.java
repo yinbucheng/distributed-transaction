@@ -24,6 +24,9 @@ public class DbAspectJ {
           if(token==null) {
               return (Connection) joinPoint.proceed();
           }else{
+              if(MstDbConnectionLimit.isMaxDbNumber()){
+                  throw new RuntimeException("mst db connection user out,please later try");
+              }
               Connection connection = (Connection) joinPoint.proceed();
               connection.setAutoCommit(false);
               MstDbConnection dbConnection = new MstDbConnection(connection);
