@@ -11,6 +11,8 @@ import cn.mst.server.base.StartStrategy;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -21,7 +23,8 @@ import java.util.concurrent.Executors;
  * @Author buchengyin
  * @Date 2018/12/20 11:21
  **/
-public class CoreStart {
+@Component
+public class CoreStart implements CommandLineRunner{
     @Value("${mst.namespace}")
     private String namespace;
     @Value("${mst.zk.url}")
@@ -72,5 +75,10 @@ public class CoreStart {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        mstStart();
     }
 }

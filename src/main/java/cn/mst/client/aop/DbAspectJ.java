@@ -7,6 +7,7 @@ import cn.mst.client.base.RollbackCoordinator;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 
@@ -16,6 +17,7 @@ import java.sql.Connection;
  * @Date 2018/12/19 14:34
  **/
 @Aspect
+@Component
 public class DbAspectJ {
 
     @Around("execution(java.sql.Connection *..getConnection(..))")

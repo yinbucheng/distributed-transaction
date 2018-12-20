@@ -10,6 +10,8 @@ import cn.mst.common.WebUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
@@ -21,7 +23,8 @@ import java.util.UUID;
  * @Date 2018/12/19 14:55
  **/
 @Aspect
-public class MstMethodAspectJ {
+@Component
+public class MstMethodAspectJ implements Ordered{
 
     @Around("@annotation(cn.mst.client.annotation.BeginMst)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -78,5 +81,10 @@ public class MstMethodAspectJ {
         LockCondition condition = new LockCondition();
         MstAttributeHolder.putTokenAndLock(token, condition);
         condition.await(60);
+    }
+
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
     }
 }

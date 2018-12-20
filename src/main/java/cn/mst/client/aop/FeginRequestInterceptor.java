@@ -5,6 +5,7 @@ import cn.mst.client.constant.SystemConstant;
 import cn.mst.common.WebUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
@@ -14,6 +15,7 @@ import java.util.Enumeration;
  * @Author buchengyin
  * @Date 2018/12/19 14:56
  **/
+@Component
 public class FeginRequestInterceptor implements RequestInterceptor {
 
     @Override

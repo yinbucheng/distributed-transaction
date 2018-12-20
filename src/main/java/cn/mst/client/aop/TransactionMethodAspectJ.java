@@ -10,6 +10,8 @@ import cn.mst.common.WebUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 
 /**
  * 这里拦截用来获取事务id并和服务端进行通信
@@ -19,7 +21,8 @@ import org.aspectj.lang.annotation.Aspect;
  * @Date 2018/12/19 14:54
  **/
 @Aspect
-public class TransactionMethodAspectJ {
+@Component
+public class TransactionMethodAspectJ implements Ordered{
 
 
     @Around("@annotation(org.springframework.transaction.annotation.Transactional)")
@@ -63,4 +66,8 @@ public class TransactionMethodAspectJ {
         condition.await(60);
     }
 
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
 }

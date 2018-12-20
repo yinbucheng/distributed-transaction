@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * 启动策略类，参与master选举和instances注册
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @Author buchengyin
  * @Date 2018/12/20 10:22
  **/
+@Component
 public class StartStrategy {
 
     private Logger logger = LoggerFactory.getLogger(StartStrategy.class);

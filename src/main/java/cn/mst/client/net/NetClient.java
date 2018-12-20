@@ -17,6 +17,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 这个类负责服务之间通信
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * @Author buchengyin
  * @Date 2018/12/19 15:33
  **/
+@Component
 public class NetClient {
     private Logger logger = LoggerFactory.getLogger(NetClient.class);
     //此标记用来表示网络通信是否启动成功
