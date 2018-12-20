@@ -32,9 +32,10 @@ public class ZKUtils {
     public static boolean createPersistentNode(ZooKeeper zk,String path,byte[] data){
         try {
             String result =  zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            return false;
+            return true;
         } catch (Exception e){
-            throw new RuntimeException(e);
+            logger.error(SystemConstant.PREV_LOG+e);
+            return false;
         }
     }
 
