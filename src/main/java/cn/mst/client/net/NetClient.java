@@ -47,15 +47,15 @@ public class NetClient {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                     ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 5, 0));
-                    ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024, 0, 4));
+                    ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024, 0, 4,0,4));
                     ch.pipeline().addLast("decode2", new StringDecoder());
                     ch.pipeline().addLast("myDecode", new MstNetHandler());
-                    ch.pipeline().addFirst("encode1", new LengthFieldPrepender(4, 4));
+                    ch.pipeline().addFirst("encode1", new LengthFieldPrepender(4));
                     ch.pipeline().addFirst("encode2", new StringEncoder());
                 }
             });
             ChannelFuture future = bootstrap.connect(ip, port).sync();
-            future.channel().closeFuture().addListener(new GenericFutureListener<Future<? super Void>>() {
+            future.addListener(new GenericFutureListener<Future<? super Void>>() {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (future.isSuccess()) {
@@ -65,7 +65,7 @@ public class NetClient {
                         start = false;
                     }
                 }
-            }).sync();
+            }).channel().closeFuture().sync();
 
         } catch (Exception e) {
             start = false;
