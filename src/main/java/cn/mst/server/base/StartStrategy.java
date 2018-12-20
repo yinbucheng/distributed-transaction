@@ -57,7 +57,7 @@ public class StartStrategy {
             if(!MstServerAttributeClean.isStart()){
                 MstServerAttributeClean.work();
             }
-            server.start();
+            server.start(port);
         }
     }
 }

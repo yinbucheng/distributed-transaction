@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class NetServer {
     private volatile boolean start = false;
 
-    public void start() {
+    public void start(int port) {
         if (start)
             return;
         start = true;
@@ -47,7 +47,7 @@ public class NetServer {
                    ch.pipeline().addLast("decoder3",new MstServerHandler());
                 }
             });
-            ChannelFuture future = bootstrap.bind(9090).sync();
+            ChannelFuture future = bootstrap.bind(port).sync();
             future.channel().closeFuture().addListener(new GenericFutureListener<Future<? super Void>>() {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
