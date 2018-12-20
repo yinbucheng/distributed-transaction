@@ -21,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class RollbackCoordinator {
    private static Logger logger = LoggerFactory.getLogger(RollbackCoordinator.class);
    private  final static int size = 120;
+   private static volatile  boolean start = false;
     //这里超时时间默认为120
     private static LinkedBlockingQueue<Map<String,MstDbConnection>>[] rollbackQueue = new LinkedBlockingQueue[size];
     private static Executor executor = Executors.newFixedThreadPool(10);
@@ -43,6 +44,9 @@ public class RollbackCoordinator {
      * 回滚协调器运行核心方法
      */
     public static void work(){
+        if(start)
+            return;
+        start = true;
         singleExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -88,5 +92,10 @@ public class RollbackCoordinator {
             }
         }
     }
+
+    public static boolean isStart(){
+        return start;
+    }
+
 
 }

@@ -16,7 +16,7 @@ public class AddressStrategy {
      * @param namespace
      * @return
      */
-    public Object[] resolveIpAndPort(String namespace){
+    public static Object[] resolveIpAndPort(String namespace){
        boolean flag = ZKUtils.exist(MstAttributeHolder.getZkClient(),"/"+ SystemConstant.ROOT_PATH+"/"+namespace+"/master");
        if(!flag){
            return null;

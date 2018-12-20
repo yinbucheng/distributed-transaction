@@ -51,11 +51,11 @@ public class StartStrategy {
         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/master",data.getBytes());
         if(flag){
             logger.info(SystemConstant.PREV_LOG+data+" vote master success");
-            server.start();
             //启动server内存定时清理器
             if(!MstServerAttributeClean.isStart()){
                 MstServerAttributeClean.work();
             }
+            server.start();
         }
     }
 }
