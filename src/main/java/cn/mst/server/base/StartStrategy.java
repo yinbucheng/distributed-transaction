@@ -34,14 +34,19 @@ public class StartStrategy {
     }
 
     public void registerInstance(){
-        ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(), "/"+SystemConstant.ROOT_PATH,null);
-        ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace,null);
-        ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/",null);
-        ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/"+SystemConstant.INSTANCES_PATH,null);
         ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/"+SystemConstant.INSTANCES_PATH+"/"+ WebUtils.getLocalIP()+":"+port,null);
     }
 
     public void masterVoteAndStart(){
+       boolean existFlag =  ZKUtils.exist(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/master");
+       if(existFlag){
+           try {
+               Thread.sleep(60*1000);
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           }
+           return;
+       }
         String data = WebUtils.getLocalIP()+":"+port;
         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/master",data.getBytes());
         if(flag){
