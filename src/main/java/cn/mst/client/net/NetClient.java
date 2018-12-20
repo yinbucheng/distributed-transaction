@@ -50,7 +50,7 @@ public class NetClient {
                     ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024, 0, 4));
                     ch.pipeline().addLast("decode2", new StringDecoder());
                     ch.pipeline().addLast("myDecode", new MstNetHandler());
-                    ch.pipeline().addFirst("encode1", new LengthFieldPrepender(1024, 4));
+                    ch.pipeline().addFirst("encode1", new LengthFieldPrepender(4, 4));
                     ch.pipeline().addFirst("encode2", new StringEncoder());
                 }
             });

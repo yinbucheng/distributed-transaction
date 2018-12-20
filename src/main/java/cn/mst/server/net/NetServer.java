@@ -46,7 +46,7 @@ public class NetServer {
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                    ch.pipeline().addLast("decoder1",new LengthFieldBasedFrameDecoder(1024,0,4));
                    ch.pipeline().addLast("decoder2",new StringDecoder());
-                   ch.pipeline().addFirst("encoder1",new LengthFieldPrepender(1024,4));
+                   ch.pipeline().addFirst("encoder1",new LengthFieldPrepender(4,4));
                    ch.pipeline().addFirst("encoder2",new StringEncoder());
                    ch.pipeline().addLast("decoder3",new MstServerHandler());
                 }
@@ -57,6 +57,7 @@ public class NetServer {
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (!future.isSuccess()) {
                         start = false;
+                        logger.info(SystemConstant.PREV_LOG+" net server start fail");
                     }else{
                         logger.info(SystemConstant.PREV_LOG+" net server start success");
                     }
