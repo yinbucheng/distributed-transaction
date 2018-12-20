@@ -19,7 +19,6 @@ public class InitOpertion {
     public static void initBasePath(ZooKeeper zooKeeper,String namespace){
         ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(), "/"+ SystemConstant.ROOT_PATH,null);
         ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace,null);
-        ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/",null);
         ZKUtils.createPersistentNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/"+SystemConstant.INSTANCES_PATH,null);
     }
 }
