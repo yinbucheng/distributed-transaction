@@ -2,6 +2,7 @@ package cn.mst.common;
 
 import cn.mst.client.constant.SystemConstant;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -64,5 +66,21 @@ public class ZKUtils {
             logger.error(SystemConstant.PREV_LOG+e);
             return false;
         }
+    }
+
+    public static String getData(ZooKeeper zooKeeper,String path) {
+        Stat stat = new Stat();
+        try {
+            byte[] data = zooKeeper.getData(path, false, stat);
+            String value = new String(data, "UTF-8");
+            return value;
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
