@@ -43,7 +43,7 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
             Integer state = entry.getKey();
             String token = entry.getValue();
             if(state!=MstMessageBuilder.PING){
-                logger.info(SystemConstant.SERVER_LOG+msg);
+                logger.debug(SystemConstant.SERVER_LOG+msg);
             }
             switch (state){
                 case MstMessageBuilder.REGISTER:
