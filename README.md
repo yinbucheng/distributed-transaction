@@ -18,7 +18,6 @@
  4.ribbon.okToRetryOnAllOperations = false
  5. ribbon.MaxAutoRetriesNextServer = 0
  ```
- 
 ## 
 
 
