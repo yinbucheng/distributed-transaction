@@ -48,7 +48,6 @@ public class TransactionMethodAspectJ implements Ordered{
             throw new RuntimeException("mst db connection user out,please later try");
         }
         MstAttributeHolder.putMstToken(token);
-        logger.info(SystemConstant.PREV_LOG+" into msc method");
         try {
             notifyAndWait(token, MstMessageBuilder.sendRegister(token));
             Object value = joinPoint.proceed();
