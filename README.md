@@ -1,23 +1,23 @@
 # 第一个开源项目MST分布式事务解决方案。配置更少不需再部署任何其他服务
 
-## 第一步现在项目，采用maven install 安装到本地仓库中（下面适用于springboot版本1cloudDalston.SR4）
+## 第一步选择合适的分支
 ```
-<dependency>
-	<groupId>cn.mst</groupId>
-	<artifactId>mst</artifactId>
-	<version>1.5.6</version>
-</dependency>
+springboot版本1的使用下面：
+https://github.com/yinbucheng/mst/tree/v1.5.6
+
+springboot版本2的使用下面:
+https://github.com/yinbucheng/mst/tree/v2.0.1
 ```
-## 第二步配置添加
+## 第二步选择好合适分支导入后进行maven install
 ```
- 1.mst.zk.url      zookeeper的地址比如127.0.0.1:2181 (相同事务控制的微服务配置要同一个zookeeper地址)
- 2.mst.namespace   项目在zookeeper上面的路径(相同事务控制的微服务配置要相同)
- 3.mst.server.port 协调器的端口地址
- 
- 添加如下配置防止接口被多次重复调用保证接口幂等性
- 4.ribbon.okToRetryOnAllOperations = false
- 5. ribbon.MaxAutoRetriesNextServer = 0
+根据不同分支上面的readme进行不同操作
  ```
 ## 
 
-
+## 注意点
+```
+1.需要将service层上面错误抛出了
+2.使用分布式事务已入相应的包
+3.在需要使用分布式事务的服务开始service上面添加@BeginMst注解
+4.fegin的failback方法直接抛出异常
+```
