@@ -44,7 +44,6 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
      * @param msg
      */
     private void handlerResponse(String msg) {
-        logger.info(SystemConstant.PREV_LOG + msg);
         Map<Integer, String> result = MstMessageBuilder.resolverMessage(msg);
         for (Map.Entry<Integer, String> entry : result.entrySet()) {
             Integer state = entry.getKey();
