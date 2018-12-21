@@ -10,9 +10,11 @@
 ```
 ## 第二步配置添加
 ```
- 1.mst.zk.url  zookeeper的地址比如127.0.0.1:2181
- 2.mst.namespace 项目在zookeeper上面的路径
+ 1.mst.zk.url      zookeeper的地址比如127.0.0.1:2181
+ 2.mst.namespace   项目在zookeeper上面的路径
  3.mst.server.port 协调器的端口地址
  ```
  
 ## 等待测试及优化
+
+
