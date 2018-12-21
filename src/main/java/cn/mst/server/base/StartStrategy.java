@@ -28,6 +28,7 @@ public class StartStrategy {
     @Autowired
     private NetServer server;
 
+
     public void beginStart(){
         for(int i=0;i<Integer.MAX_VALUE;i++) {
             registerInstance();

@@ -7,6 +7,7 @@ import cn.mst.client.base.RollbackCoordinator;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -18,7 +19,7 @@ import java.sql.Connection;
  **/
 @Aspect
 @Component
-public class DbAspectJ {
+public class DbAspectJ implements Ordered{
 
     @Around("execution(java.sql.Connection *..getConnection(..))")
     public Connection proxyConnection(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -33,9 +34,15 @@ public class DbAspectJ {
               connection.setAutoCommit(false);
               MstDbConnection dbConnection = new MstDbConnection(connection);
               MstAttributeHolder.putTokenAndCon(token,dbConnection);
-              RollbackCoordinator.addConn(token,dbConnection);
+              RollbackCoordinator.addConn(token);
               MstDbConnectionLimit.incrementDbNumber();
               return dbConnection;
           }
+    }
+
+
+    @Override
+    public int getOrder() {
+        return LOWEST_PRECEDENCE;
     }
 }

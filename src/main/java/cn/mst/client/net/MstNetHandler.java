@@ -40,40 +40,43 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
     /**
      * 处理服务端过来的信息
+     *
      * @param msg
      */
     private void handlerResponse(String msg) {
+        logger.debug(SystemConstant.PREV_LOG+msg);
         Map<Integer, String> result = MstMessageBuilder.resolverMessage(msg);
         for (Map.Entry<Integer, String> entry : result.entrySet()) {
             Integer state = entry.getKey();
             String token = entry.getValue();
             switch (state) {
                 case MstMessageBuilder.REGISTER_OK:
-                    LockCondition condition = MstAttributeHolder.getLockByToken(token);
-                    condition.single();
-                    MstAttributeHolder.removeLock(token);
+                    LockCondition condition = MstAttributeHolder.removeLock(token);
+                    if (condition != null) {
+                        condition.single();
+                    }
                     break;
                 case MstMessageBuilder.ROLLBACK:
-                    MstDbConnection dbConnection = MstAttributeHolder.getConnByToken(token);
+                    MstDbConnection dbConnection = MstAttributeHolder.removeConn(token);
                     try {
-                        dbConnection.realRollback();
-                        dbConnection.realClose();
+                        if (dbConnection != null) {
+                            dbConnection.realRollbackAndClose();
+                        }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " rollback fail");
                         e.printStackTrace();
                     }
-                    MstAttributeHolder.removeConn(token);
                     break;
                 case MstMessageBuilder.COMMIT:
-                    MstDbConnection dbConnection2 = MstAttributeHolder.getConnByToken(token);
+                    MstDbConnection dbConnection2 = MstAttributeHolder.removeConn(token);
                     try {
-                        dbConnection2.realCommit();
-                        dbConnection2.realClose();
+                        if (dbConnection2 != null) {
+                            dbConnection2.realCommitAndClose();
+                        }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " commit fail");
                         e.printStackTrace();
                     }
-                    MstAttributeHolder.removeConn(token);
                     break;
             }
         }
@@ -81,8 +84,8 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
         NetClient.socketClient = ctx;
+        super.channelActive(ctx);
     }
 
     @Override

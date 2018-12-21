@@ -38,8 +38,8 @@ public class MstAttributeHolder {
         return token_conn.get(token);
     }
 
-    public static void removeConn(String token){
-        token_conn.remove(token);
+    public static MstDbConnection removeConn(String token){
+        return token_conn.remove(token);
     }
 
     public static void putTokenAndLock(String token,LockCondition lockCondition){
@@ -50,8 +50,8 @@ public class MstAttributeHolder {
         return token_lock.get(token);
     }
 
-    public static void removeLock(String token){
-        token_lock.remove(token);
+    public static LockCondition removeLock(String token){
+        return token_lock.remove(token);
     }
 
     public static void setZkClient(ZooKeeper zkClient){

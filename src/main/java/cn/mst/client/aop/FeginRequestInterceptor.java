@@ -5,6 +5,8 @@ import cn.mst.client.constant.SystemConstant;
 import cn.mst.common.WebUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,10 +19,12 @@ import java.util.Enumeration;
  **/
 @Component
 public class FeginRequestInterceptor implements RequestInterceptor {
+    private Logger logger = LoggerFactory.getLogger(FeginRequestInterceptor.class);
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
         String token = MstAttributeHolder.getMstToken();
+        logger.debug(SystemConstant.PREV_LOG+" send remote service token:"+token);
         if (token != null) {
             requestTemplate.header(SystemConstant.MST_TOKEN, token);
         }

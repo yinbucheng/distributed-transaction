@@ -8,6 +8,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.LineEncoder;
 import io.netty.handler.codec.string.StringDecoder;
@@ -39,6 +41,7 @@ public class NetClient {
     public void startWork(String ip,int port) {
         if (start)
             return;
+        start = true;
         NioEventLoopGroup workGroup = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap();
@@ -49,11 +52,11 @@ public class NetClient {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
                     ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 5, 0,TimeUnit.SECONDS));
-                    ch.pipeline().addLast("decode1", new LineBasedFrameDecoder(1024));
+                    ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024,0,4,0,4));
                     ch.pipeline().addLast("decode2", new StringDecoder());
                     ch.pipeline().addLast("myDecode", new MstNetHandler());
-                    ch.pipeline().addFirst("encode1", new LineEncoder());
-                    ch.pipeline().addFirst("encode2", new StringEncoder());
+                    ch.pipeline().addFirst("encode1", new StringEncoder());
+                    ch.pipeline().addFirst("encode2", new LengthFieldPrepender(4));
                 }
             });
             ChannelFuture future = bootstrap.connect(ip, port).sync();
@@ -62,7 +65,6 @@ public class NetClient {
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (future.isSuccess()) {
                         logger.info(SystemConstant.PREV_LOG+" net client start success");
-                        start = true;
                     } else {
                         start = false;
                     }

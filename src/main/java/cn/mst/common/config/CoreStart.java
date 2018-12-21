@@ -19,12 +19,13 @@ import java.util.concurrent.Executors;
 
 /**
  * 这个类控制服务端启动和客户端mst使用
+ *
  * @ClassName CoreStart
  * @Author buchengyin
  * @Date 2018/12/20 11:21
  **/
 @Component
-public class CoreStart implements CommandLineRunner{
+public class CoreStart implements CommandLineRunner {
     @Value("${mst.namespace}")
     private String namespace;
     @Value("${mst.zk.url}")
@@ -34,11 +35,12 @@ public class CoreStart implements CommandLineRunner{
     @Autowired
     private NetClient client;
     private Executor executor = Executors.newFixedThreadPool(2);
-    public void mstStart(){
-        ZooKeeper zooKeeper = ZKUtils.newZkClient(url,5000);
+
+    public void mstStart() {
+        ZooKeeper zooKeeper = ZKUtils.newZkClient(url, 5000);
         MstAttributeHolder.setZkClient(zooKeeper);
         MstServerAttributeHolder.setZkClient(zooKeeper);
-        InitOpertion.initBasePath(zooKeeper,namespace);
+        InitOpertion.initBasePath(zooKeeper, namespace);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -58,19 +60,26 @@ public class CoreStart implements CommandLineRunner{
      * 启动Mst客户端
      */
     private void invokeMstClient() {
-        for (int i=0;i<Integer.MAX_VALUE;i++){
+        boolean fist = true;
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
             //启动回滚事务器
             boolean flag = RollbackCoordinator.isStart();
-            if(!flag){
+            if (!flag) {
                 RollbackCoordinator.work();
             }
             //启动客户端
             Object[] ip_port = AddressStrategy.resolveIpAndPort(namespace);
-            if(ip_port!=null){
-                client.startWork((String)ip_port[0],(Integer)ip_port[1]);
+            if (ip_port != null) {
+                client.startWork((String) ip_port[0], (Integer) ip_port[1]);
             }
+
             try {
-                Thread.sleep(60*1000);
+                if (fist) {
+                    fist = false;
+                    Thread.sleep(15 * 1000);
+                }else {
+                    Thread.sleep(60 * 1000);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
