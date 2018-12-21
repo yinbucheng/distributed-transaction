@@ -1,11 +1,11 @@
 # 第一个开源项目MST分布式事务解决方案。配置更少不需再部署任何其他服务
 
-## 第一步现在项目，采用maven install 安装到本地仓库中（下面适用于springboot版本1cloudDalston.SR4）
+## 第一步现在项目，采用maven install 安装到本地仓库中（下面适用于springboot版本2）
 ```
 <dependency>
 	<groupId>cn.mst</groupId>
 	<artifactId>mst</artifactId>
-	<version>1.5.6</version>
+	<version>2.0.1</version>
 </dependency>
 ```
 ## 第二步配置添加
