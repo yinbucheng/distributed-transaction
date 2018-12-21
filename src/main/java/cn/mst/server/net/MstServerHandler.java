@@ -42,6 +42,9 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
         for(Map.Entry<Integer,String> entry:map.entrySet()){
             Integer state = entry.getKey();
             String token = entry.getValue();
+            if(state!=MstMessageBuilder.PING){
+                logger.info(SystemConstant.PREV_LOG+msg);
+            }
             switch (state){
                 case MstMessageBuilder.REGISTER:
                     MstServerAttributeHolder.addChannelHandlerContext(token,ctx);

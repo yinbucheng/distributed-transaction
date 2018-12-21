@@ -46,10 +46,10 @@ public class NetServer {
             bootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
-                   ch.pipeline().addLast("decoder1",new LineBasedFrameDecoder(1024));
+                   ch.pipeline().addLast("decoder1",new LengthFieldBasedFrameDecoder(1024,0,4,0,4));
                    ch.pipeline().addLast("decoder2",new StringDecoder());
-                   ch.pipeline().addFirst("encoder1",new LineEncoder());
-                   ch.pipeline().addFirst("encoder2",new StringEncoder());
+                   ch.pipeline().addFirst("encoder1",new StringEncoder());
+                   ch.pipeline().addFirst("encoder2",new LengthFieldPrepender(4));
                    ch.pipeline().addLast("decoder3",new MstServerHandler());
                 }
             });
