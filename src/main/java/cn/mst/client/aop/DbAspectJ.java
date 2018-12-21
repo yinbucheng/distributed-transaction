@@ -40,6 +40,7 @@ public class DbAspectJ implements Ordered{
           }
     }
 
+
     @Override
     public int getOrder() {
         return LOWEST_PRECEDENCE;
