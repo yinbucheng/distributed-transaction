@@ -10,6 +10,8 @@ import cn.mst.common.WebUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionMethodAspectJ implements Ordered{
 
+    private Logger logger = LoggerFactory.getLogger(TransactionMethodAspectJ.class);
 
     @Around("@annotation(org.springframework.transaction.annotation.Transactional)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -33,7 +36,8 @@ public class TransactionMethodAspectJ implements Ordered{
             return joinPoint.proceed();
         }
         //这里表示不同服务不同方法调用
-        token = (String) WebUtils.getRequest().getAttribute(SystemConstant.MST_TOKEN);
+        token = (String) WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
+        logger.info(SystemConstant.PREV_LOG+" get token :"+token);
         if (token == null) {
             return joinPoint.proceed();
         }
@@ -44,6 +48,7 @@ public class TransactionMethodAspectJ implements Ordered{
             throw new RuntimeException("mst db connection user out,please later try");
         }
         MstAttributeHolder.putMstToken(token);
+        logger.info(SystemConstant.PREV_LOG+" into msc method");
         try {
             notifyAndWait(token, MstMessageBuilder.sendRegister(token));
             Object value = joinPoint.proceed();
