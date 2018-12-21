@@ -50,8 +50,8 @@ public class MstAttributeHolder {
         return token_lock.get(token);
     }
 
-    public static void removeLock(String token){
-        token_lock.remove(token);
+    public static LockCondition removeLock(String token){
+        return token_lock.remove(token);
     }
 
     public static void setZkClient(ZooKeeper zkClient){

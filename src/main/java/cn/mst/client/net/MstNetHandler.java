@@ -40,39 +40,43 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
     /**
      * 处理服务端过来的信息
+     *
      * @param msg
      */
     private void handlerResponse(String msg) {
-        logger.info(SystemConstant.PREV_LOG+msg);
+        logger.info(SystemConstant.PREV_LOG + msg);
         Map<Integer, String> result = MstMessageBuilder.resolverMessage(msg);
         for (Map.Entry<Integer, String> entry : result.entrySet()) {
             Integer state = entry.getKey();
             String token = entry.getValue();
             switch (state) {
                 case MstMessageBuilder.REGISTER_OK:
-                    LockCondition condition = MstAttributeHolder.getLockByToken(token);
-                    condition.single();
-                    MstAttributeHolder.removeLock(token);
+                    LockCondition condition = MstAttributeHolder.removeLock(token);
+                    if (condition != null) {
+                        condition.single();
+                    }
                     break;
                 case MstMessageBuilder.ROLLBACK:
-                    MstDbConnection dbConnection = MstAttributeHolder.getConnByToken(token);
+                    MstDbConnection dbConnection = MstAttributeHolder.removeConn(token);
                     try {
-                        dbConnection.realRollbackAndClose();
+                        if (dbConnection != null) {
+                            dbConnection.realRollbackAndClose();
+                        }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " rollback fail");
                         e.printStackTrace();
                     }
-                    MstAttributeHolder.removeConn(token);
                     break;
                 case MstMessageBuilder.COMMIT:
-                    MstDbConnection dbConnection2 = MstAttributeHolder.getConnByToken(token);
+                    MstDbConnection dbConnection2 = MstAttributeHolder.removeConn(token);
                     try {
-                        dbConnection2.realCommitAndClose();
+                        if (dbConnection2 != null) {
+                            dbConnection2.realCommitAndClose();
+                        }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " commit fail");
                         e.printStackTrace();
                     }
-                    MstAttributeHolder.removeConn(token);
                     break;
             }
         }
