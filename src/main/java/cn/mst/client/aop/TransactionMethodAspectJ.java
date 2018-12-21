@@ -37,7 +37,7 @@ public class TransactionMethodAspectJ implements Ordered{
         }
         //这里表示不同服务不同方法调用
         token = (String) WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
-        logger.info(SystemConstant.PREV_LOG+" get token :"+token);
+        logger.debug(SystemConstant.PREV_LOG+" get token :"+token);
         if (token == null) {
             return joinPoint.proceed();
         }
