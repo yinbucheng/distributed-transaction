@@ -73,6 +73,6 @@ public class TransactionMethodAspectJ implements Ordered{
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+        return Ordered.LOWEST_PRECEDENCE-1;
     }
 }
