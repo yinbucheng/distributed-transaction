@@ -13,8 +13,12 @@
  1.mst.zk.url      zookeeper的地址比如127.0.0.1:2181 (相同事务控制的微服务配置要同一个zookeeper地址)
  2.mst.namespace   项目在zookeeper上面的路径(相同事务控制的微服务配置要相同)
  3.mst.server.port 协调器的端口地址
+ 
+ 添加如下配置防止接口被多次重复调用保证接口幂等性
+ 4.ribbon.okToRetryOnAllOperations = false
+ 5. ribbon.MaxAutoRetriesNextServer = 0
  ```
  
-## 等待测试及优化
+## 
 
 
