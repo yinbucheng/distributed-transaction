@@ -300,6 +300,7 @@ public class MstDbConnection implements Connection {
             logger.info(SystemConstant.PREV_LOG+" official commit and close");
             connection.commit();
             connection.close();
+            MstDbConnectionLimit.decrementDbNumber();
         }
     }
 
@@ -310,17 +311,9 @@ public class MstDbConnection implements Connection {
             logger.info(SystemConstant.PREV_LOG+" official rollback and close");
             connection.rollback();
             connection.close();
-        }
-
-    }
-
-    //正式关闭
-    public void realClose() throws SQLException {
-        if(!used) {
             MstDbConnectionLimit.decrementDbNumber();
-            used = true;
-            logger.info(SystemConstant.PREV_LOG+" official close");
-            connection.close();
         }
+
     }
+
 }
