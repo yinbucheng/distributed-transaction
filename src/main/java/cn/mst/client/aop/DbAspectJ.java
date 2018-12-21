@@ -34,7 +34,7 @@ public class DbAspectJ implements Ordered{
               connection.setAutoCommit(false);
               MstDbConnection dbConnection = new MstDbConnection(connection);
               MstAttributeHolder.putTokenAndCon(token,dbConnection);
-              RollbackCoordinator.addConn(token,dbConnection);
+              RollbackCoordinator.addConn(token);
               MstDbConnectionLimit.incrementDbNumber();
               return dbConnection;
           }
