@@ -78,7 +78,6 @@ public class RollbackCoordinator {
                 String token = iterator.next();
                 try {
                     MstDbConnection connection = MstAttributeHolder.removeConn(token);
-                    logger.info(SystemConstant.PREV_LOG + "  time execute rollback:" + token);
                     if (connection != null) {
                         connection.realRollbackAndClose();
                     }
