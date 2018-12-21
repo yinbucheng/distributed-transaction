@@ -294,20 +294,22 @@ public class MstDbConnection implements Connection {
     }
 
     //正式提交
-    public void realCommit() throws SQLException {
+    public void realCommitAndClose() throws SQLException {
         if(!used) {
             used = true;
-            logger.info(SystemConstant.PREV_LOG+" official commit");
+            logger.info(SystemConstant.PREV_LOG+" official commit and close");
             connection.commit();
+            connection.close();
         }
     }
 
     //正式回滚
-    public void realRollback() throws SQLException {
+    public void realRollbackAndClose() throws SQLException {
         if(!used){
             used = true;
-            logger.info(SystemConstant.PREV_LOG+" official rollback");
+            logger.info(SystemConstant.PREV_LOG+" official rollback and close");
             connection.rollback();
+            connection.close();
         }
 
     }

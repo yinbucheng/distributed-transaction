@@ -81,8 +81,7 @@ public class RollbackCoordinator {
                         String token = entry.getKey();
                         MstDbConnection connection = entry.getValue();
                         MstAttributeHolder.removeConn(token);
-                        connection.realRollback();
-                        connection.realClose();
+                        connection.realRollbackAndClose();
                     }
                 } catch (SQLException e) {
                     logger.info(SystemConstant.PREV_LOG+" rollback fail");

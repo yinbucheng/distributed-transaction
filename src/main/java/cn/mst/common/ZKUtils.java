@@ -34,7 +34,7 @@ public class ZKUtils {
             String result =  zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             return true;
         } catch (Exception e){
-            logger.error(SystemConstant.PREV_LOG+e);
+            logger.debug(SystemConstant.PREV_LOG+e);
             return false;
         }
     }
@@ -44,7 +44,7 @@ public class ZKUtils {
             zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
             return true;
         } catch (Exception e){
-            logger.error(SystemConstant.PREV_LOG+e);
+            logger.debug(SystemConstant.PREV_LOG+e);
             return false;
         }
     }
@@ -64,7 +64,7 @@ public class ZKUtils {
                 return true;
             return false;
         } catch (Exception e){
-            logger.error(SystemConstant.PREV_LOG+e);
+            logger.debug(SystemConstant.PREV_LOG+e);
             return false;
         }
     }
