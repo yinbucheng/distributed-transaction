@@ -14,6 +14,7 @@
  2.mst.namespace   项目在zookeeper上面的路径(相同事务控制的微服务配置要相同)
  3.mst.server.port 协调器的端口地址
  
+ 
  添加如下配置防止接口被多次重复调用保证接口幂等性
  4.ribbon.okToRetryOnAllOperations = false
  5. ribbon.MaxAutoRetriesNextServer = 0
