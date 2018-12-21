@@ -24,7 +24,7 @@ public class FeginRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         String token = MstAttributeHolder.getMstToken();
-        logger.info(SystemConstant.PREV_LOG+" send remote service token:"+token);
+        logger.debug(SystemConstant.PREV_LOG+" send remote service token:"+token);
         if (token != null) {
             requestTemplate.header(SystemConstant.MST_TOKEN, token);
         }
