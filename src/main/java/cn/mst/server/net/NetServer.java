@@ -59,9 +59,9 @@ public class NetServer {
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (!future.isSuccess()) {
                         start = false;
-                        logger.info(SystemConstant.PREV_LOG+" net server start fail");
+                        logger.info(SystemConstant.SERVER_LOG+" net server start fail");
                     }else{
-                        logger.info(SystemConstant.PREV_LOG+" net server start success");
+                        logger.info(SystemConstant.SERVER_LOG+" net server start success");
                     }
                 }
             }).channel().closeFuture().sync();
