@@ -70,6 +70,10 @@ public class StartStrategy {
                                 MstServerAttributeHolder.notifyCloseFutrue();
                                 MstServerAttributeHolder.addCloseFuture(null);
                                 break;
+                            case NodeDataChanged:
+                                MstServerAttributeHolder.notifyCloseFutrue();
+                                MstServerAttributeHolder.addCloseFuture(null);
+                                break;
                             default:
                                 MstServerAttributeHolder.getZkClient().register(this);
                                 break;

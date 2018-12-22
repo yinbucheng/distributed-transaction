@@ -1,10 +1,13 @@
 package cn.mst.server.base;
 
+import cn.mst.client.constant.SystemConstant;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.Signal;
 import io.netty.util.concurrent.DefaultPromise;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -18,6 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @Date 2018/12/19 19:04
  **/
 public class MstServerAttributeHolder {
+    private static Logger logger = LoggerFactory.getLogger(MstServerAttributeHolder.class);
     private static LinkedBlockingQueue<String> rollBack = new LinkedBlockingQueue<>();
     private static ConcurrentHashMap<String,List<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
     private static volatile ZooKeeper zkClient;
@@ -29,13 +33,14 @@ public class MstServerAttributeHolder {
     }
 
     public static void notifyCloseFutrue(){
+        logger.info(SystemConstant.SERVER_LOG+" notify net server close");
         if(closeFuture==null)
             return;
         synchronized (closeFuture){
             try {
                 Field field = DefaultPromise.class.getDeclaredField("result");
                 field.setAccessible(true);
-                field.set(closeFuture, Signal.valueOf(DefaultPromise.class, "SUCCESS"));
+                field.set(closeFuture, Signal.valueOf("SUCCESS"));
                 closeFuture.notifyAll();
             }catch (Exception e){
                 throw new RuntimeException(e);
