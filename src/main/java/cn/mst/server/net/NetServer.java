@@ -72,11 +72,12 @@ public class NetServer {
             start = false;
             throw new RuntimeException(e);
         } finally {
-            logger.info(SystemConstant.SERVER_LOG+" net server close ");
+            start = false;
             if (!bossGroup.isShutdown())
                 bossGroup.shutdownGracefully();
             if (!workGroup.isShutdown())
                 workGroup.shutdownGracefully();
+            logger.info(SystemConstant.SERVER_LOG+" net server close ");
         }
 
     }

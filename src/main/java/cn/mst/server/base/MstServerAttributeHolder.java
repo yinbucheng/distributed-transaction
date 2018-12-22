@@ -10,8 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -32,15 +34,17 @@ public class MstServerAttributeHolder {
         closeFuture = future;
     }
 
+
     public static void notifyCloseFutrue(){
         logger.info(SystemConstant.SERVER_LOG+" notify net server close");
         if(closeFuture==null)
             return;
         synchronized (closeFuture){
             try {
+                closeFuture.channel().unsafe().closeForcibly();
                 Field field = DefaultPromise.class.getDeclaredField("result");
                 field.setAccessible(true);
-                field.set(closeFuture, Signal.valueOf("SUCCESS"));
+                field.set(closeFuture, Signal.valueOf("SUCCESS"+UUID.randomUUID()));
                 closeFuture.notifyAll();
             }catch (Exception e){
                 throw new RuntimeException(e);

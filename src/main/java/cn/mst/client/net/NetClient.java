@@ -75,8 +75,9 @@ public class NetClient {
             start = false;
             logger.error(SystemConstant.PREV_LOG + e);
         } finally {
-            if (!workGroup.isShutdown())
-                workGroup.shutdownGracefully();
+            start=false;
+            workGroup.shutdownGracefully();
+            logger.info(SystemConstant.PREV_LOG+" net client close success");
         }
     }
 }
