@@ -1,6 +1,7 @@
 package cn.mst.server.net;
 
 import cn.mst.client.constant.SystemConstant;
+import cn.mst.server.base.MstServerAttributeHolder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -54,7 +55,7 @@ public class NetServer {
                 }
             });
             ChannelFuture future = bootstrap.bind(port).sync();
-            future.addListener(new GenericFutureListener<Future<? super Void>>() {
+            ChannelFuture closeFuture =future.addListener(new GenericFutureListener<Future<? super Void>>() {
                 @Override
                 public void operationComplete(Future<? super Void> future) throws Exception {
                     if (!future.isSuccess()) {
@@ -64,15 +65,19 @@ public class NetServer {
                         logger.info(SystemConstant.SERVER_LOG+" net server start success");
                     }
                 }
-            }).channel().closeFuture().sync();
+            }).channel().closeFuture();
+            MstServerAttributeHolder.addCloseFuture(closeFuture);
+            closeFuture.sync();
         } catch (Exception e) {
             start = false;
             throw new RuntimeException(e);
         } finally {
+            start = false;
             if (!bossGroup.isShutdown())
                 bossGroup.shutdownGracefully();
             if (!workGroup.isShutdown())
                 workGroup.shutdownGracefully();
+            logger.info(SystemConstant.SERVER_LOG+" net server close ");
         }
 
     }

@@ -10,6 +10,8 @@ import cn.mst.common.WebUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,7 @@ import java.util.UUID;
 @Aspect
 @Component
 public class MstMethodAspectJ implements Ordered{
+    private Logger logger = LoggerFactory.getLogger(MstMethodAspectJ.class);
 
     @Around("@annotation(cn.mst.client.annotation.BeginMst)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {

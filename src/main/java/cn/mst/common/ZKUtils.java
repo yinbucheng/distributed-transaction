@@ -1,10 +1,7 @@
 package cn.mst.common;
 
 import cn.mst.client.constant.SystemConstant;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +20,12 @@ public class ZKUtils {
 
     public static ZooKeeper newZkClient(String url, int timeout) {
         try {
-            return new ZooKeeper(url, timeout, null);
+            return new ZooKeeper(url, timeout, new Watcher() {
+                @Override
+                public void process(WatchedEvent watchedEvent) {
+                    logger.info(SystemConstant.SERVER_LOG+" event "+watchedEvent.getType()+" path:"+watchedEvent.getPath());
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
