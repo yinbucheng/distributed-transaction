@@ -79,6 +79,5 @@ public class NetServer {
                 workGroup.shutdownGracefully();
             logger.info(SystemConstant.SERVER_LOG+" net server close ");
         }
-
     }
 }
