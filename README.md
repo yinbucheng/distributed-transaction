@@ -21,3 +21,11 @@ https://github.com/yinbucheng/mst/tree/v2.0.1
 3.在需要使用分布式事务的服务开始service上面添加@BeginMst注解
 4.fegin的failback方法直接抛出异常
 ```
+
+###  内部原理
+```
+第一步会进行协调者的选举（协调者就是用来保证各个服务事务正常运行的核心主件）
+通过zookeeper上面可以体现出来：打开zookeeper客户端进入到microservice_transaction
+在进入到你配置的namespace中会看到instance目录，里面记录是所有参与选举的服务
+master中则表示选举成功的服务，内容就是当前正在运行的协调者ip和端口
+```
