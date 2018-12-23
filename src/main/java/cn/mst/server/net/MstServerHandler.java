@@ -2,6 +2,7 @@ package cn.mst.server.net;
 
 import cn.mst.client.constant.SystemConstant;
 import cn.mst.common.MstMessageBuilder;
+import cn.mst.server.base.MstServerAttributeClean;
 import cn.mst.server.base.MstServerAttributeHolder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -43,11 +44,12 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
             Integer state = entry.getKey();
             String token = entry.getValue();
             if(state!=MstMessageBuilder.PING){
-                logger.info(SystemConstant.SERVER_LOG+msg);
+                logger.debug(SystemConstant.SERVER_LOG+msg);
             }
             switch (state){
                 case MstMessageBuilder.REGISTER:
                     MstServerAttributeHolder.addChannelHandlerContext(token,ctx);
+                    MstServerAttributeClean.addToken(token);
                     //这里通知客户端取消阻塞
                     ctx.writeAndFlush(MstMessageBuilder.registerOk(token));
                     break;
