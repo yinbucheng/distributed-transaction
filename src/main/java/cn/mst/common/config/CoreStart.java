@@ -38,8 +38,10 @@ public class CoreStart implements CommandLineRunner {
 
     public void mstStart() {
         ZooKeeper zooKeeper = ZKUtils.newZkClient(url, 5000);
-        MstAttributeHolder.setZkClient(zooKeeper);
-        MstServerAttributeHolder.setZkClient(zooKeeper);
+        if(zooKeeper!=null) {
+            MstAttributeHolder.setZkClient(zooKeeper);
+            MstServerAttributeHolder.setZkClient(zooKeeper);
+        }
         InitOpertion.initBasePath(zooKeeper, namespace);
         executor.execute(new Runnable() {
             @Override

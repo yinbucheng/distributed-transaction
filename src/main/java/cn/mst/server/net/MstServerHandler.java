@@ -2,6 +2,7 @@ package cn.mst.server.net;
 
 import cn.mst.client.constant.SystemConstant;
 import cn.mst.common.MstMessageBuilder;
+import cn.mst.server.base.MstServerAttributeClean;
 import cn.mst.server.base.MstServerAttributeHolder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -48,6 +49,7 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
             switch (state){
                 case MstMessageBuilder.REGISTER:
                     MstServerAttributeHolder.addChannelHandlerContext(token,ctx);
+                    MstServerAttributeClean.addToken(token);
                     //这里通知客户端取消阻塞
                     ctx.writeAndFlush(MstMessageBuilder.registerOk(token));
                     break;
@@ -58,8 +60,11 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
                     break;
                 case MstMessageBuilder.FIN:
                     List<ChannelHandlerContext> ctxs = MstServerAttributeHolder.removeChannelHandlerContext(token);
-                   boolean flag =  MstServerAttributeHolder.isRollBack(token);
-                   if(flag){
+                   boolean rollBackFlag =  MstServerAttributeHolder.isRollBack(token);
+                   if(!rollBackFlag){
+                       rollBackFlag = !allChannelActive(ctxs);
+                   }
+                   if(rollBackFlag){
                       for(ChannelHandlerContext channel:ctxs){
                           channel.writeAndFlush(MstMessageBuilder.sendRollback(token));
                       }
@@ -71,4 +76,14 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
             }
         }
     }
+
+    //发送提交命令时判断下当前客户端是否全部都正常，否则回滚
+    public boolean allChannelActive(List<ChannelHandlerContext> ctxs){
+        for(ChannelHandlerContext ctx:ctxs){
+            if(!ctx.channel().isActive())
+                return false;
+        }
+        return true;
+    }
+
 }
