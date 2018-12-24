@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
  **/
 public class MstServerHandler extends SimpleChannelInboundHandler<String> {
     private Logger logger = LoggerFactory.getLogger(MstServerHandler.class);
-    Executor executor = Executors.newFixedThreadPool(10);
+    static Executor executor = Executors.newFixedThreadPool(10);
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
         logger.debug(SystemConstant.PREV_LOG+msg);
