@@ -1,5 +1,7 @@
 package cn.mst.client.base;
 
+import cn.mst.common.EnviromentUtils;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -25,6 +27,10 @@ public class MstDbConnectionLimit {
     }
 
     public static boolean isMaxDbNumber(){
+        Integer tempMax = EnviromentUtils.getProperties("mst.max.conntion",Integer.class);
+        if(tempMax!=null){
+            max = tempMax;
+        }
         return getCurrentDbNumber()>max;
     }
 }
