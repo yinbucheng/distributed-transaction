@@ -1,6 +1,7 @@
 package cn.mst.server.base;
 
 import cn.mst.client.constant.SystemConstant;
+import cn.mst.common.EnviromentUtils;
 import cn.mst.common.WebUtils;
 import cn.mst.common.ZKUtils;
 import cn.mst.server.net.NetServer;
@@ -52,7 +53,10 @@ public class StartStrategy {
            }
            return;
        }
-        String data = WebUtils.getLocalIP()+":"+port;
+        String data = EnviromentUtils.getProperties("mst.server.ip");
+         if(data==null||data.equals("")){
+             data = WebUtils.getLocalIP()+":"+port;
+         }
         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/master",data.getBytes());
         if(flag){
             logger.info(SystemConstant.PREV_LOG+data+" vote master success");
