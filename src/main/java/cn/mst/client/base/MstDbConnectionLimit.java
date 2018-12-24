@@ -27,7 +27,7 @@ public class MstDbConnectionLimit {
     }
 
     public static boolean isMaxDbNumber(){
-        Integer tempMax = EnviromentUtils.getProperties("mst.max.conntion",Integer.class);
+        Integer tempMax = EnviromentUtils.getProperties("mst.max.connection",Integer.class);
         if(tempMax!=null){
             max = tempMax;
         }
