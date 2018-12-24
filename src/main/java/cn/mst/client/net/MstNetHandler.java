@@ -26,7 +26,7 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
     private Logger logger = LoggerFactory.getLogger(MstNetHandler.class);
 
-    private Executor executor = Executors.newFixedThreadPool(10);
+    private static Executor executor = Executors.newFixedThreadPool(10);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
