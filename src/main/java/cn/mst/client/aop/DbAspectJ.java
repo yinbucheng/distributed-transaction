@@ -30,12 +30,12 @@ public class DbAspectJ implements Ordered{
               if(MstDbConnectionLimit.isMaxDbNumber()){
                   throw new RuntimeException("mst db connection user out,please later try");
               }
+              MstDbConnectionLimit.incrementDbNumber();
               Connection connection = (Connection) joinPoint.proceed();
               connection.setAutoCommit(false);
               MstDbConnection dbConnection = new MstDbConnection(connection);
               MstAttributeHolder.putTokenAndCon(token,dbConnection);
               RollbackCoordinator.addConn(token);
-              MstDbConnectionLimit.incrementDbNumber();
               return dbConnection;
           }
     }

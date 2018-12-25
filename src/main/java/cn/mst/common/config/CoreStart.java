@@ -49,7 +49,6 @@ public class CoreStart implements CommandLineRunner {
                 startStrategy.beginStart();
             }
         });
-
         executor.execute(new Runnable() {
             @Override
             public void run() {

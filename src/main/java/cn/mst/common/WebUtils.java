@@ -34,6 +34,11 @@ public class WebUtils {
      * @return String
      */
     public static String getLocalIP() {
+//        return getNoDockerIP();
+        return NetUtils.findFirstNonLoopbackAddress().getHostAddress();
+    }
+
+    private static String getNoDockerIP() {
         String sIP = "";
         InetAddress ip = null;
         try {
