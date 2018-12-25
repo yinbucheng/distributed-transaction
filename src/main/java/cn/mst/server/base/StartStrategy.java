@@ -34,13 +34,18 @@ public class StartStrategy {
 
     public void beginStart(){
         for(int i=0;i<Integer.MAX_VALUE;i++) {
-            registerInstance();
-            masterVoteAndStart();
+            if(registerInstance()) {
+                masterVoteAndStart();
+            }
         }
     }
 
-    public void registerInstance(){
-        ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/"+SystemConstant.INSTANCES_PATH+"/"+ WebUtils.getLocalIP()+":"+port,null);
+    public boolean registerInstance(){
+        String data = EnviromentUtils.getProperties("mst.server.ip");
+        if(data==null||data.equals("")){
+            data = WebUtils.getLocalIP()+":"+port;
+        }
+        return ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/"+SystemConstant.INSTANCES_PATH+"/"+ data+":"+port,null);
     }
 
     public void masterVoteAndStart(){
