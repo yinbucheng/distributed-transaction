@@ -77,7 +77,6 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
-
     //发送提交命令时判断下当前客户端是否全部都正常，否则回滚
     public boolean allChannelActive(List<ChannelHandlerContext> ctxs){
         for(ChannelHandlerContext ctx:ctxs){
