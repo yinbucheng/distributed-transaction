@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 启动策略类，参与master选举和instances注册
+ *
  * @ClassName StartStrategy
  * @Author buchengyin
  * @Date 2018/12/20 10:22
@@ -32,41 +33,50 @@ public class StartStrategy {
     private NetServer server;
 
 
-    public void beginStart(){
-        for(int i=0;i<Integer.MAX_VALUE;i++) {
-            if(registerInstance()) {
-                masterVoteAndStart();
-            }
+    public void beginStart() {
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            registerInstance();
+            masterVoteAndStart();
         }
     }
 
-    public boolean registerInstance(){
-        String data = EnviromentUtils.getProperties("mst.server.ip");
-        if(data==null||data.equals("")){
-            data = WebUtils.getLocalIP()+":"+port;
-        }
-        return ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/"+SystemConstant.INSTANCES_PATH+"/"+ data+":"+port,null);
+    public void registerInstance() {
+        ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/" + SystemConstant.INSTANCES_PATH + "/" + getIp() + ":" + port, null);
     }
 
-    public void masterVoteAndStart(){
-       boolean existFlag =  ZKUtils.exist(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/master");
-       if(existFlag){
-           try {
-               Thread.sleep(60*1000);
-           } catch (InterruptedException e) {
-               e.printStackTrace();
-           }
-           return;
-       }
+    private String getIp() {
         String data = EnviromentUtils.getProperties("mst.server.ip");
-         if(data==null||data.equals("")){
-             data = WebUtils.getLocalIP()+":"+port;
-         }
-        boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(),"/"+SystemConstant.ROOT_PATH+"/"+namespace+"/master",data.getBytes());
-        if(flag){
-            logger.info(SystemConstant.PREV_LOG+data+" vote master success");
+        if (data == null || data.equals("")) {
+            data = WebUtils.getLocalIP();
+        }
+        return data;
+    }
+
+    public void sleepSecond(int time) {
+        try {
+            Thread.sleep(time * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void masterVoteAndStart() {
+        boolean flag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/" + SystemConstant.INSTANCES_PATH + "/" + getIp() + ":" + port);
+        if (!flag) {
+            sleepSecond(60);
+            return;
+        }
+
+        boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
+        if (existFlag) {
+            sleepSecond(60);
+            return;
+        }
+         flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
+        if (flag) {
+            logger.info(SystemConstant.PREV_LOG + getIp()+":"+port + " vote master success");
             //启动server内存定时清理器
-            if(!MstServerAttributeClean.isStart()){
+            if (!MstServerAttributeClean.isStart()) {
                 MstServerAttributeClean.work();
             }
             try {
@@ -89,8 +99,8 @@ public class StartStrategy {
                         }
                     }
                 });
-            }catch (Exception e){
-                logger.error(SystemConstant.SERVER_LOG+e);
+            } catch (Exception e) {
+                logger.error(SystemConstant.SERVER_LOG + e);
             }
             server.start(port);
         }
