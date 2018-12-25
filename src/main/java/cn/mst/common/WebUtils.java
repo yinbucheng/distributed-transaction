@@ -34,11 +34,10 @@ public class WebUtils {
      * @return String
      */
     public static String getLocalIP() {
-//        return getNoDockerIP();
-        return NetUtils.findFirstNonLoopbackAddress().getHostAddress();
+        return getNetLocalIP();
     }
 
-    private static String getNoDockerIP() {
+    private static String getNetLocalIP() {
         String sIP = "";
         InetAddress ip = null;
         try {
@@ -58,7 +57,7 @@ public class WebUtils {
                     //----------特定情况，可以考虑用ni.getName判断
                     String name = ni.getName();
                     //如果为docker的虚拟ip地址调过
-                    if(name.contains("docker") ||name.contains("lo"))
+                    if(name.startsWith("docker") ||name.startsWith("lo")||name.startsWith("br")||name.startsWith("veth"))
                         continue;
                     //遍历所有ip
                     Enumeration<InetAddress> ips = ni.getInetAddresses();
