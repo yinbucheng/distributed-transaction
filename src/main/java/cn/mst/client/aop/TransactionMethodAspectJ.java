@@ -41,7 +41,7 @@ public class TransactionMethodAspectJ implements Ordered{
         if (token == null) {
             return joinPoint.proceed();
         }
-        if (!NetClient.start || NetClient.socketClient == null) {
+        if (!NetClient.start || NetClient.socketClient == null||NetClient.socketClient.channel().isActive()) {
             throw new RuntimeException("netclient start fail,please make sure netclient start");
         }
         if(MstDbConnectionLimit.isMaxDbNumber()){
