@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  **/
 public class RollbackCoordinator {
     private static Logger logger = LoggerFactory.getLogger(RollbackCoordinator.class);
-    private final static int size = 60*4;
+    private final static int size = 60 * 4;
     private static volatile boolean start = false;
     //这里超时时间默认为120
     private static LinkedBlockingQueue<String>[] rollbackQueue = new LinkedBlockingQueue[size];
@@ -50,19 +50,17 @@ public class RollbackCoordinator {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                    LinkedBlockingQueue<String> temp = rollbackQueue[cur];
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            executeRollBack(temp);
-                        }
-                    });
-                    pre = cur;
-                    cur = cur == size - 1 ? 0 : cur + 1;
-                }
+                LinkedBlockingQueue<String> temp = rollbackQueue[cur];
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        executeRollBack(temp);
+                    }
+                });
+                pre = cur;
+                cur = cur == size - 1 ? 0 : cur + 1;
             }
-        },0L,1000L);
+        }, 0L, 1000L);
 
     }
 

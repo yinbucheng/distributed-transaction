@@ -3,6 +3,7 @@ package cn.mst.common.init;
 import cn.mst.client.base.AddressStrategy;
 import cn.mst.client.base.MstAttributeHolder;
 import cn.mst.client.base.RollbackCoordinator;
+import cn.mst.client.constant.SystemConstant;
 import cn.mst.client.net.NetClient;
 import cn.mst.common.InitOpertion;
 import cn.mst.common.ZKUtils;
@@ -32,15 +33,19 @@ public class CoreStart implements CommandLineRunner {
     private String namespace;
     @Value("${mst.zk.url}")
     private String url;
+    @Value("${mst.server.port}")
+    private Integer port;
     @Autowired
     private StartStrategy startStrategy;
     @Autowired
     private NetClient client;
     private Timer clientTimer = new Timer("Mst client Timer", true);
     private Timer serverTimer = new Timer("Mst server Timer", true);
+    private Timer coreTimer = new Timer("Core Time", true);
+    private ZooKeeper zooKeeper;
 
     public void mstStart() {
-        ZooKeeper zooKeeper = ZKUtils.newZkClient(url, 5000);
+         zooKeeper = ZKUtils.newZkClient(url, 5000);
         if (zooKeeper != null) {
             MstAttributeHolder.setZkClient(zooKeeper);
             MstServerAttributeHolder.setZkClient(zooKeeper);
@@ -60,6 +65,24 @@ public class CoreStart implements CommandLineRunner {
             }
         }, 6000L, 60 * 1000L);
 
+        coreTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                checkServerNode();
+            }
+        }, 0, 30 * 1000L);
+
+    }
+
+    private void checkServerNode() {
+        boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
+        if (existFlag) {
+            String data = ZKUtils.getData(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
+            if (!data.equals(StartStrategy.getIp() + ":" + port)) {
+                MstServerAttributeHolder.notifyCloseFutrue();
+                MstServerAttributeHolder.addCloseFuture(null);
+            }
+        }
     }
 
     /**

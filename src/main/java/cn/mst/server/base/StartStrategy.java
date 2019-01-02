@@ -42,7 +42,7 @@ public class StartStrategy {
         ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/" + SystemConstant.INSTANCES_PATH + "/" + getIp() + ":" + port, null);
     }
 
-    private String getIp() {
+    public static String getIp() {
         String data = EnviromentUtils.getProperties("mst.server.ip");
         if (data == null || data.equals("")) {
             data = WebUtils.getLocalIP();
@@ -54,13 +54,6 @@ public class StartStrategy {
     public void masterVoteAndStart() {
         boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
         if (existFlag) {
-            //获取当前的值是自己吗
-            String data = ZKUtils.getData(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
-            logger.info(SystemConstant.SERVER_LOG + " get master data:" + data);
-            if (!data.equals(getIp() + ":" + port)) {
-                MstServerAttributeHolder.notifyCloseFutrue();
-                MstServerAttributeHolder.addCloseFuture(null);
-            }
             return;
         }
         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
