@@ -34,10 +34,8 @@ public class StartStrategy {
 
 
     public void beginStart() {
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            registerInstance();
-            masterVoteAndStart();
-        }
+        registerInstance();
+        masterVoteAndStart();
     }
 
     public void registerInstance() {
@@ -57,17 +55,17 @@ public class StartStrategy {
         boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
         if (existFlag) {
             //获取当前的值是自己吗
-            String data = ZKUtils.getData(MstServerAttributeHolder.getZkClient(),"/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
-            logger.info(SystemConstant.SERVER_LOG+" get master data:"+data);
-            if(!data.equals(getIp() + ":" + port)){
+            String data = ZKUtils.getData(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
+            logger.info(SystemConstant.SERVER_LOG + " get master data:" + data);
+            if (!data.equals(getIp() + ":" + port)) {
                 MstServerAttributeHolder.notifyCloseFutrue();
                 MstServerAttributeHolder.addCloseFuture(null);
             }
             return;
         }
-         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
+        boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
         if (flag) {
-            logger.info(SystemConstant.PREV_LOG + getIp()+":"+port + " vote master success");
+            logger.info(SystemConstant.PREV_LOG + getIp() + ":" + port + " vote master success!");
             //启动server内存定时清理器
             if (!MstServerAttributeClean.isStart()) {
                 MstServerAttributeClean.work();

@@ -36,12 +36,12 @@ public class CoreStart implements CommandLineRunner {
     private StartStrategy startStrategy;
     @Autowired
     private NetClient client;
-    private Timer clientTimer = new Timer("Mst client Timer",true);
-    private Timer serverTimer = new Timer("Mst server Timer",true);
+    private Timer clientTimer = new Timer("Mst client Timer", true);
+    private Timer serverTimer = new Timer("Mst server Timer", true);
 
     public void mstStart() {
         ZooKeeper zooKeeper = ZKUtils.newZkClient(url, 5000);
-        if(zooKeeper!=null) {
+        if (zooKeeper != null) {
             MstAttributeHolder.setZkClient(zooKeeper);
             MstServerAttributeHolder.setZkClient(zooKeeper);
         }
@@ -51,14 +51,14 @@ public class CoreStart implements CommandLineRunner {
             public void run() {
                 startStrategy.beginStart();
             }
-        },0L,60*1000L);
+        }, 0L, 60 * 1000L);
 
         clientTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 invokeMstClient();
             }
-        },6000L,60*1000L);
+        }, 6000L, 60 * 1000L);
 
     }
 
@@ -66,17 +66,15 @@ public class CoreStart implements CommandLineRunner {
      * 启动Mst客户端
      */
     private void invokeMstClient() {
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            //启动回滚事务器
-            boolean flag = RollbackCoordinator.isStart();
-            if (!flag) {
-                RollbackCoordinator.work();
-            }
-            //启动客户端
-            Object[] ip_port = AddressStrategy.resolveIpAndPort(namespace);
-            if (ip_port != null) {
-                client.startWork((String) ip_port[0], (Integer) ip_port[1]);
-            }
+        //启动回滚事务器
+        boolean flag = RollbackCoordinator.isStart();
+        if (!flag) {
+            RollbackCoordinator.work();
+        }
+        //启动客户端
+        Object[] ip_port = AddressStrategy.resolveIpAndPort(namespace);
+        if (ip_port != null) {
+            client.startWork((String) ip_port[0], (Integer) ip_port[1]);
         }
     }
 
