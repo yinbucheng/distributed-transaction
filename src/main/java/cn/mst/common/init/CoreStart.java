@@ -58,7 +58,7 @@ public class CoreStart implements CommandLineRunner {
             public void run() {
                 invokeMstClient();
             }
-        },1000L,60*1000L);
+        },6000L,60*1000L);
 
     }
 
