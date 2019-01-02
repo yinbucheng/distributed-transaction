@@ -25,60 +25,62 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MstServerAttributeHolder {
     private static Logger logger = LoggerFactory.getLogger(MstServerAttributeHolder.class);
     private static LinkedBlockingQueue<String> rollBack = new LinkedBlockingQueue<>();
-    private static ConcurrentHashMap<String,List<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, List<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
     private static volatile ZooKeeper zkClient;
 
     private static volatile ChannelFuture closeFuture;
 
-    public static void addCloseFuture(ChannelFuture future){
+    public static void addCloseFuture(ChannelFuture future) {
         closeFuture = future;
     }
 
 
-    public static void notifyCloseFutrue(){
-        if(closeFuture==null)
+    public static void notifyCloseFutrue() {
+        if (closeFuture == null)
             return;
-        logger.info(SystemConstant.SERVER_LOG+" notify net server close");
-        synchronized (closeFuture){
+        logger.info(SystemConstant.SERVER_LOG + " notify net server close");
+        synchronized (closeFuture) {
             try {
                 closeFuture.channel().unsafe().closeForcibly();
                 Field field = DefaultPromise.class.getDeclaredField("result");
                 field.setAccessible(true);
-                field.set(closeFuture, Signal.valueOf("SUCCESS"+UUID.randomUUID()));
+                field.set(closeFuture, Signal.valueOf("SUCCESS" + UUID.randomUUID()));
                 closeFuture.notifyAll();
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public static void addRollBackFlag(String token){
+    public static void addRollBackFlag(String token) {
         rollBack.add(token);
     }
 
-    public static boolean isRollBack(String token){
+    public static boolean isRollBack(String token) {
         boolean flag = rollBack.remove(token);
         return flag;
     }
 
-    public static void addChannelHandlerContext(String token,ChannelHandlerContext context){
-       List<ChannelHandlerContext> channels =  token_channels.get(token);
-       if(channels==null){
-           channels = new LinkedList<>();
-           token_channels.put(token,channels);
-       }
-       channels.add(context);
+    public static void addChannelHandlerContext(String token, ChannelHandlerContext context) {
+        synchronized (token) {
+            List<ChannelHandlerContext> channels = token_channels.get(token);
+            if (channels == null) {
+                channels = new LinkedList<>();
+                token_channels.put(token, channels);
+            }
+            channels.add(context);
+        }
     }
 
-    public static List<ChannelHandlerContext> removeChannelHandlerContext(String token){
+    public static List<ChannelHandlerContext> removeChannelHandlerContext(String token) {
         return token_channels.remove(token);
     }
 
-    public static void setZkClient(ZooKeeper zkClient){
+    public static void setZkClient(ZooKeeper zkClient) {
         MstServerAttributeHolder.zkClient = zkClient;
     }
 
-    public static ZooKeeper getZkClient(){
+    public static ZooKeeper getZkClient() {
         return zkClient;
     }
 }
