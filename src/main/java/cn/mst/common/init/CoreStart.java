@@ -51,6 +51,7 @@ public class CoreStart implements CommandLineRunner {
             MstServerAttributeHolder.setZkClient(zooKeeper);
         }
         InitOpertion.initBasePath(zooKeeper, namespace);
+
         serverTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {

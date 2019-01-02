@@ -63,29 +63,6 @@ public class StartStrategy {
             if (!MstServerAttributeClean.isStart()) {
                 MstServerAttributeClean.work();
             }
-            try {
-                //注册事件监听保证zookeeper端口服务端也就端口
-                MstServerAttributeHolder.getZkClient().exists("/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", new Watcher() {
-                    @Override
-                    public void process(WatchedEvent watchedEvent) {
-                        switch (watchedEvent.getType()) {
-                            case NodeDeleted:
-                                MstServerAttributeHolder.notifyCloseFutrue();
-                                MstServerAttributeHolder.addCloseFuture(null);
-                                break;
-                            case NodeDataChanged:
-                                MstServerAttributeHolder.notifyCloseFutrue();
-                                MstServerAttributeHolder.addCloseFuture(null);
-                                break;
-                            default:
-                                MstServerAttributeHolder.getZkClient().register(this);
-                                break;
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                logger.error(SystemConstant.SERVER_LOG + e);
-            }
             server.start(port);
         }
     }
