@@ -23,33 +23,35 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MstServerHandler extends SimpleChannelInboundHandler<String> {
     private Logger logger = LoggerFactory.getLogger(MstServerHandler.class);
     private static Executor executor = Executors.newFixedThreadPool(10);
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        logger.debug(SystemConstant.PREV_LOG+msg);
-          executor.execute(new Runnable() {
-              @Override
-              public void run() {
-                  executeMsg(msg, ctx);
-              }
-          });
+        logger.debug(SystemConstant.PREV_LOG + msg);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                executeMsg(msg, ctx);
+            }
+        });
     }
 
     /**
      * 根据不同结果处理不同值
+     *
      * @param msg
      * @param ctx
      */
     private void executeMsg(String msg, ChannelHandlerContext ctx) {
         Map<Integer, String> map = MstMessageBuilder.resolverMessage(msg);
-        for(Map.Entry<Integer,String> entry:map.entrySet()){
+        for (Map.Entry<Integer, String> entry : map.entrySet()) {
             Integer state = entry.getKey();
             String token = entry.getValue();
-            if(state!=MstMessageBuilder.PING){
-                logger.debug(SystemConstant.SERVER_LOG+msg);
+            if (state != MstMessageBuilder.PING) {
+                logger.debug(SystemConstant.SERVER_LOG + msg);
             }
-            switch (state){
+            switch (state) {
                 case MstMessageBuilder.REGISTER:
-                    MstServerAttributeHolder.addChannelHandlerContext(token,ctx);
+                    MstServerAttributeHolder.addChannelHandlerContext(token, ctx);
                     MstServerAttributeClean.addToken(token);
                     //这里通知客户端取消阻塞
                     ctx.writeAndFlush(MstMessageBuilder.registerOk(token));
@@ -61,27 +63,27 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
                     break;
                 case MstMessageBuilder.FIN:
                     LinkedBlockingQueue<ChannelHandlerContext> ctxs = MstServerAttributeHolder.removeChannelHandlerContext(token);
-                   boolean rollBackFlag =  MstServerAttributeHolder.isRollBack(token);
-                   if(!rollBackFlag){
-                       rollBackFlag = !allChannelActive(ctxs);
-                   }
-                   if(rollBackFlag){
-                      for(ChannelHandlerContext channel:ctxs){
-                          channel.writeAndFlush(MstMessageBuilder.sendRollback(token));
-                      }
-                   }else{
-                       for(ChannelHandlerContext channel:ctxs){
-                           channel.writeAndFlush(MstMessageBuilder.sendCommit(token));
-                       }
-                   }
+                    boolean rollBackFlag = MstServerAttributeHolder.isRollBack(token);
+                    if (!rollBackFlag) {
+                        rollBackFlag = !allChannelActive(ctxs);
+                    }
+                    if (rollBackFlag) {
+                        for (ChannelHandlerContext channel : ctxs) {
+                            channel.writeAndFlush(MstMessageBuilder.sendRollback(token));
+                        }
+                    } else {
+                        for (ChannelHandlerContext channel : ctxs) {
+                            channel.writeAndFlush(MstMessageBuilder.sendCommit(token));
+                        }
+                    }
             }
         }
     }
 
     //发送提交命令时判断下当前客户端是否全部都正常，否则回滚
-    public boolean allChannelActive(LinkedBlockingQueue<ChannelHandlerContext> ctxs){
-        for(ChannelHandlerContext ctx:ctxs){
-            if(!ctx.channel().isActive())
+    public boolean allChannelActive(LinkedBlockingQueue<ChannelHandlerContext> ctxs) {
+        for (ChannelHandlerContext ctx : ctxs) {
+            if (!ctx.channel().isActive())
                 return false;
         }
         return true;
