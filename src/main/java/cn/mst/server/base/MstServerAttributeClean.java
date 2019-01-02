@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  **/
 public class MstServerAttributeClean {
     private static Timer timer = new Timer("MstServer Timer", true);
-    private static final int size = 240;
+    private static final int size = 60*4;
     private static LinkedBlockingQueue<String>[] tokens = new LinkedBlockingQueue[size];
     private static volatile int prev = size - 1;
     private static volatile int cur = 0;
