@@ -52,24 +52,15 @@ public class StartStrategy {
         return data;
     }
 
-    public void sleepSecond(int time) {
-        try {
-            Thread.sleep(time * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void masterVoteAndStart() {
         boolean flag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/" + SystemConstant.INSTANCES_PATH + "/" + getIp() + ":" + port);
         if (!flag) {
-            sleepSecond(60);
             return;
         }
 
         boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
         if (existFlag) {
-            sleepSecond(60);
             return;
         }
          flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());

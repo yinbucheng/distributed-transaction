@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -34,7 +36,8 @@ public class CoreStart implements CommandLineRunner {
     private StartStrategy startStrategy;
     @Autowired
     private NetClient client;
-    private Executor executor = Executors.newFixedThreadPool(2);
+    private Timer clientTimer = new Timer("Mst client Timer",true);
+    private Timer serverTimer = new Timer("Mst server Timer",true);
 
     public void mstStart() {
         ZooKeeper zooKeeper = ZKUtils.newZkClient(url, 5000);
@@ -43,25 +46,26 @@ public class CoreStart implements CommandLineRunner {
             MstServerAttributeHolder.setZkClient(zooKeeper);
         }
         InitOpertion.initBasePath(zooKeeper, namespace);
-        executor.execute(new Runnable() {
+        serverTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 startStrategy.beginStart();
             }
-        });
-        executor.execute(new Runnable() {
+        },0L,60*1000L);
+
+        clientTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 invokeMstClient();
             }
-        });
+        },1000L,60*1000L);
+
     }
 
     /**
      * 启动Mst客户端
      */
     private void invokeMstClient() {
-        boolean fist = true;
         for (int i = 0; i < Integer.MAX_VALUE; i++) {
             //启动回滚事务器
             boolean flag = RollbackCoordinator.isStart();
@@ -72,17 +76,6 @@ public class CoreStart implements CommandLineRunner {
             Object[] ip_port = AddressStrategy.resolveIpAndPort(namespace);
             if (ip_port != null) {
                 client.startWork((String) ip_port[0], (Integer) ip_port[1]);
-            }
-
-            try {
-                if (fist) {
-                    fist = false;
-                    Thread.sleep(15 * 1000);
-                }else {
-                    Thread.sleep(60 * 1000);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
