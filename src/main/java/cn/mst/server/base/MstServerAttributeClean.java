@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  **/
 public class MstServerAttributeClean {
     private static Timer timer = new Timer("MstServer Timer", true);
-    private static final int size = 60*4;
+    private static final int size = 60 * 4;
     private static LinkedBlockingQueue<String>[] tokens = new LinkedBlockingQueue[size];
     private static volatile int prev = size - 1;
     private static volatile int cur = 0;
@@ -40,17 +40,15 @@ public class MstServerAttributeClean {
                 new TimerTask() {
                     @Override
                     public void run() {
-                        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                            Iterator<String> iterator = tokens[cur].iterator();
-                            while (iterator.hasNext()) {
-                                String token = iterator.next();
-                                MstServerAttributeHolder.removeChannelHandlerContext(token);
-                                MstServerAttributeHolder.isRollBack(token);
-                                iterator.remove();
-                            }
-                            prev = cur;
-                            cur = cur == size - 1 ? 0 : cur + 1;
+                        Iterator<String> iterator = tokens[cur].iterator();
+                        while (iterator.hasNext()) {
+                            String token = iterator.next();
+                            MstServerAttributeHolder.removeChannelHandlerContext(token);
+                            MstServerAttributeHolder.isRollBack(token);
+                            iterator.remove();
                         }
+                        prev = cur;
+                        cur = cur == size - 1 ? 0 : cur + 1;
                     }
                 }, 0L, 1000L);
 
