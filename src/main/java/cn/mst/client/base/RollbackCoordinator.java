@@ -73,6 +73,7 @@ public class RollbackCoordinator {
                     MstDbConnection connection = MstAttributeHolder.removeConn(token);
                     if (connection != null) {
                         connection.realRollbackAndClose();
+                        logger.info(SystemConstant.PREV_LOG + " timeout rollback success");
                     }
                 } catch (SQLException e) {
                     logger.info(SystemConstant.PREV_LOG + " rollback fail");

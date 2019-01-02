@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @ClassName MstServerHandler
@@ -59,7 +60,7 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
                     ctx.writeAndFlush(MstMessageBuilder.registerOk(token));
                     break;
                 case MstMessageBuilder.FIN:
-                    List<ChannelHandlerContext> ctxs = MstServerAttributeHolder.removeChannelHandlerContext(token);
+                    LinkedBlockingQueue<ChannelHandlerContext> ctxs = MstServerAttributeHolder.removeChannelHandlerContext(token);
                    boolean rollBackFlag =  MstServerAttributeHolder.isRollBack(token);
                    if(!rollBackFlag){
                        rollBackFlag = !allChannelActive(ctxs);
@@ -78,7 +79,7 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
     }
 
     //发送提交命令时判断下当前客户端是否全部都正常，否则回滚
-    public boolean allChannelActive(List<ChannelHandlerContext> ctxs){
+    public boolean allChannelActive(LinkedBlockingQueue<ChannelHandlerContext> ctxs){
         for(ChannelHandlerContext ctx:ctxs){
             if(!ctx.channel().isActive())
                 return false;

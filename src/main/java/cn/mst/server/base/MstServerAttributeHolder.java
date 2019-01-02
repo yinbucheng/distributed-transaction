@@ -25,7 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MstServerAttributeHolder {
     private static Logger logger = LoggerFactory.getLogger(MstServerAttributeHolder.class);
     private static LinkedBlockingQueue<String> rollBack = new LinkedBlockingQueue<>();
-    private static ConcurrentHashMap<String, List<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, LinkedBlockingQueue<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
     private static volatile ZooKeeper zkClient;
 
     private static volatile ChannelFuture closeFuture;
@@ -62,17 +62,19 @@ public class MstServerAttributeHolder {
     }
 
     public static void addChannelHandlerContext(String token, ChannelHandlerContext context) {
-        synchronized (token) {
-            List<ChannelHandlerContext> channels = token_channels.get(token);
-            if (channels == null) {
-                channels = new LinkedList<>();
-                token_channels.put(token, channels);
+        LinkedBlockingQueue<ChannelHandlerContext> channels = token_channels.get(token);
+        if (channels == null) {
+            synchronized (token_channels) {
+                if (channels == null) {
+                    channels = new LinkedBlockingQueue<>();
+                    token_channels.put(token, channels);
+                }
             }
-            channels.add(context);
         }
+        channels.add(context);
     }
 
-    public static List<ChannelHandlerContext> removeChannelHandlerContext(String token) {
+    public static LinkedBlockingQueue<ChannelHandlerContext> removeChannelHandlerContext(String token) {
         return token_channels.remove(token);
     }
 
