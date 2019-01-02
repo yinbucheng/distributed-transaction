@@ -54,11 +54,6 @@ public class StartStrategy {
 
 
     public void masterVoteAndStart() {
-        boolean flag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/" + SystemConstant.INSTANCES_PATH + "/" + getIp() + ":" + port);
-        if (!flag) {
-            return;
-        }
-
         boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
         if (existFlag) {
             //获取当前的值是自己吗
@@ -70,7 +65,7 @@ public class StartStrategy {
             }
             return;
         }
-         flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
+         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
         if (flag) {
             logger.info(SystemConstant.PREV_LOG + getIp()+":"+port + " vote master success");
             //启动server内存定时清理器
