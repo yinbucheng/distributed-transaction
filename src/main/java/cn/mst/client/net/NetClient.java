@@ -51,7 +51,7 @@ public class NetClient {
             bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
                 @Override
                 protected void initChannel(NioSocketChannel ch) throws Exception {
-                    ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 5, 0,TimeUnit.SECONDS));
+                    ch.pipeline().addLast("ping_pong", new IdleStateHandler(0, 10, 0,TimeUnit.SECONDS));
                     ch.pipeline().addLast("decode1", new LengthFieldBasedFrameDecoder(1024,0,4,0,4));
                     ch.pipeline().addLast("decode2", new StringDecoder());
                     ch.pipeline().addLast("myDecode", new MstNetHandler());
