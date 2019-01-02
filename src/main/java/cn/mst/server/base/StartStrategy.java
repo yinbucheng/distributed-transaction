@@ -65,7 +65,7 @@ public class StartStrategy {
         }
         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
         if (flag) {
-            logger.info(SystemConstant.PREV_LOG + getIp() + ":" + port + " vote master success!");
+            logger.info(SystemConstant.PREV_LOG + getIp() + ":" + port + " vote master success!!!");
             //启动server内存定时清理器
             if (!MstServerAttributeClean.isStart()) {
                 MstServerAttributeClean.work();
