@@ -31,7 +31,7 @@ public class MstMethodAspectJ implements Ordered{
 
     @Around("@annotation(cn.mst.client.annotation.BeginMst)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        if (!NetClient.start || NetClient.socketClient == null) {
+        if (!NetClient.start || NetClient.socketClient == null||!NetClient.socketClient.channel().isActive()) {
             throw new RuntimeException("netclient start fail,please make sure netclient start");
         }
         //先从内存中获取是否存在，比如这里同一个服务中不同方法调用

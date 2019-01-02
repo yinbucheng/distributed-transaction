@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.mst</groupId>
     <artifactId>mst</artifactId>
-    <version>1.5.6</version>
+    <version>1.5.6-SNAPSHOT</version>
     <name>mst</name>
     <description>Microservice transaction</description>
 
