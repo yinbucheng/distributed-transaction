@@ -308,7 +308,7 @@ public class MstDbConnection implements Connection {
     public void realRollbackAndClose() throws SQLException {
         if(!used){
             used = true;
-            logger.info(SystemConstant.PREV_LOG+"official rollback and close");
+            logger.info(SystemConstant.PREV_LOG+" official rollback and close");
             connection.rollback();
             connection.close();
             MstDbConnectionLimit.decrementDbNumber();
