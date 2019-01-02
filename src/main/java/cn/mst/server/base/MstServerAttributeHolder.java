@@ -36,9 +36,9 @@ public class MstServerAttributeHolder {
 
 
     public static void notifyCloseFutrue(){
-        logger.info(SystemConstant.SERVER_LOG+" notify net server close");
         if(closeFuture==null)
             return;
+        logger.info(SystemConstant.SERVER_LOG+" notify net server close");
         synchronized (closeFuture){
             try {
                 closeFuture.channel().unsafe().closeForcibly();
