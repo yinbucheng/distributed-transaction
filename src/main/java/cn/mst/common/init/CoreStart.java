@@ -1,4 +1,4 @@
-package cn.mst.common.config;
+package cn.mst.common.init;
 
 import cn.mst.client.base.AddressStrategy;
 import cn.mst.client.base.MstAttributeHolder;
