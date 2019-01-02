@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,14 +21,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  **/
 public class RollbackCoordinator {
     private static Logger logger = LoggerFactory.getLogger(RollbackCoordinator.class);
-    private final static int size = 120;
+    private final static int size = 60*4;
     private static volatile boolean start = false;
     //这里超时时间默认为120
     private static LinkedBlockingQueue<String>[] rollbackQueue = new LinkedBlockingQueue[size];
     private static Executor executor = Executors.newFixedThreadPool(10);
     private static volatile int pre = size - 1;
     private static volatile int cur = 0;
-    private static Executor singleExecutor = Executors.newSingleThreadExecutor();
+    private static Timer timer = new Timer("Client rollback clean Timer", true);
 
     static {
         for (int i = 0; i < size; i++) {
@@ -45,7 +47,7 @@ public class RollbackCoordinator {
         if (start)
             return;
         start = true;
-        singleExecutor.execute(new Runnable() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 for (int i = 0; i < Integer.MAX_VALUE; i++) {
@@ -58,14 +60,9 @@ public class RollbackCoordinator {
                     });
                     pre = cur;
                     cur = cur == size - 1 ? 0 : cur + 1;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
-        });
+        },0L,1000L);
 
     }
 
