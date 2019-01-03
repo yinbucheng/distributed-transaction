@@ -82,7 +82,6 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
     }
 
     private void finalExecute(LinkedBlockingQueue<ChannelHandlerContext> ctxs, String s){
-        logger.info("------------->count:"+ctxs.size());
         Iterator<ChannelHandlerContext> iterator = ctxs.iterator();
         while(iterator.hasNext()){
             ChannelHandlerContext next = iterator.next();
