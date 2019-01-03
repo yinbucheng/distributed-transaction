@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  **/
 public class MstDbConnectionLimit {
     //最大连接数量限制
-    private static int max =50;
+    private static int max =30;
     private static AtomicInteger dbCount = new AtomicInteger(0);
 
     public static void incrementDbNumber(){

@@ -24,35 +24,34 @@ import org.springframework.stereotype.Component;
  **/
 @Aspect
 @Component
-public class TransactionMethodAspectJ implements Ordered{
+public class TransactionMethodAspectJ implements Ordered {
 
     private Logger logger = LoggerFactory.getLogger(TransactionMethodAspectJ.class);
 
     @Around("@annotation(org.springframework.transaction.annotation.Transactional)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         //这里表示分布式服务方法同一个服务不同方法调用
-        String token = MstAttributeHolder.getMstToken();
-        if (token != null) {
-            return joinPoint.proceed();
-        }
+        if (prevCheck()) return joinPoint.proceed();
+        String token;
         //这里表示不同服务不同方法调用
         token = (String) WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
-        logger.debug(SystemConstant.PREV_LOG+" get token :"+token);
         if (token == null) {
             return joinPoint.proceed();
         }
-        if (!NetClient.start || NetClient.socketClient == null||!NetClient.socketClient.channel().isActive()) {
-            throw new RuntimeException("netclient start fail,please make sure netclient start");
-        }
-        if(MstDbConnectionLimit.isMaxDbNumber()){
-            throw new RuntimeException("mst db connection user out,please later try");
-        }
-        MstAttributeHolder.putMstToken(token);
+        checkMstOK();
+        return nextMstInvoke(joinPoint, token);
+    }
+
+    /**
+     * 执行下一个分布式事务
+     * @param joinPoint
+     * @param token
+     * @return
+     * @throws Throwable
+     */
+    private Object nextMstInvoke(ProceedingJoinPoint joinPoint, String token) throws Throwable {
         try {
-            notifyAndWait(token, MstMessageBuilder.sendRegister(token));
-            Object value = joinPoint.proceed();
-            NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendCommit(token));
-            return value;
+            return MstMethodAspectJ.registerAndInvokeMethod(joinPoint, token);
         } catch (Exception e) {
             notifyAndWait(token, MstMessageBuilder.sendRollback(token));
             throw new RuntimeException(e);
@@ -60,6 +59,31 @@ public class TransactionMethodAspectJ implements Ordered{
             MstAttributeHolder.removeMstToken();
             MstAttributeHolder.removeLock(token);
         }
+    }
+
+    /**
+     * 校验分布式事务传递是否ok
+     */
+    private void checkMstOK() {
+        if (!NetClient.start || NetClient.socketClient == null || !NetClient.socketClient.channel().isActive()) {
+            throw new RuntimeException("netclient start fail,please make sure netclient start");
+        }
+        if (MstDbConnectionLimit.isMaxDbNumber()) {
+            throw new RuntimeException("mst db connection user out,please later try");
+        }
+    }
+
+    /**
+     * 判断当前方法是否正在分布式事务中执行
+     * @return
+     * @throws Throwable
+     */
+    private boolean prevCheck() throws Throwable {
+        String token = MstAttributeHolder.getMstToken();
+        if (token != null) {
+            return true;
+        }
+        return false;
     }
 
     //通知服务器并等待回复
@@ -72,6 +96,6 @@ public class TransactionMethodAspectJ implements Ordered{
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE-1;
+        return Ordered.LOWEST_PRECEDENCE - 1;
     }
 }

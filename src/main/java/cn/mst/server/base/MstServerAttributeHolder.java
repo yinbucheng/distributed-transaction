@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -25,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MstServerAttributeHolder {
     private static Logger logger = LoggerFactory.getLogger(MstServerAttributeHolder.class);
     private static LinkedBlockingQueue<String> rollBack = new LinkedBlockingQueue<>();
-    private static ConcurrentHashMap<String, LinkedBlockingQueue<ChannelHandlerContext>> token_channels = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, LinkedBlockingQueue<ChannelHandlerContext>> token_channels = new ConcurrentSkipListMap<>();
     private static volatile ZooKeeper zkClient;
 
     private static volatile ChannelFuture closeFuture;

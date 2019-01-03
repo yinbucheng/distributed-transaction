@@ -26,48 +26,49 @@ import java.util.UUID;
  **/
 @Aspect
 @Component
-public class MstMethodAspectJ implements Ordered{
+public class MstMethodAspectJ implements Ordered {
     private Logger logger = LoggerFactory.getLogger(MstMethodAspectJ.class);
 
     @Around("@annotation(cn.mst.client.annotation.BeginMst)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        if (!NetClient.start || NetClient.socketClient == null||!NetClient.socketClient.channel().isActive()) {
-            throw new RuntimeException("netclient start fail,please make sure netclient start");
-        }
-        //先从内存中获取是否存在，比如这里同一个服务中不同方法调用
-        String token = MstAttributeHolder.getMstToken();
+        if (prevCheck()) return joinPoint.proceed();
+       String  token = (String) WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
         if (token != null) {
-            return joinPoint.proceed();
+            return nextMstInvoke(joinPoint, token);
         }
-        if(MstDbConnectionLimit.isMaxDbNumber()){
-            throw new RuntimeException("mst db connection user out,please later try");
-        }
+        return beginMstInvoke(joinPoint);
+    }
 
-        //再从请求头中获取是否存在，这里表示不同服务调用A-B中不同方法
-        token = (String) WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
-        MstAttributeHolder.putMstToken(token);
-        if (token != null) {
-            notifyAndWait(token, MstMessageBuilder.sendRegister(token));
-            try {
-                Object value = joinPoint.proceed();
-                NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendCommit(token));
-                return value;
-            } catch (Exception e) {
-                NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendRollback(token));
-                throw new RuntimeException(e);
-            } finally {
-                MstAttributeHolder.removeMstToken();
-                MstAttributeHolder.removeLock(token);
-            }
-        }
-
-        token = System.nanoTime() + UUID.randomUUID().toString();
-        MstAttributeHolder.putMstToken(token);
+    /**
+     * 分布式事务传递执行
+     * @param joinPoint
+     * @param token
+     * @return
+     * @throws Throwable
+     */
+    private Object nextMstInvoke(ProceedingJoinPoint joinPoint, String token) throws Throwable {
         try {
-            notifyAndWait(token, MstMessageBuilder.sendRegister(token));
-            Object value = joinPoint.proceed();
-            NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendCommit(token));
-            return value;
+            return registerAndInvokeMethod(joinPoint, token);
+        } catch (Exception e) {
+            notifyAndWait(token, MstMessageBuilder.sendRollback(token));
+            throw new RuntimeException(e);
+        } finally {
+            MstAttributeHolder.removeMstToken();
+            MstAttributeHolder.removeLock(token);
+        }
+    }
+
+
+    /**
+     * 开始分布式事务执行
+     * @param joinPoint
+     * @return
+     * @throws Throwable
+     */
+    private Object beginMstInvoke(ProceedingJoinPoint joinPoint) throws Throwable {
+        String token = System.nanoTime() + UUID.randomUUID().toString();
+        try {
+            return registerAndInvokeMethod(joinPoint, token);
         } catch (Exception e) {
             notifyAndWait(token, MstMessageBuilder.sendRollback(token));
             throw new RuntimeException(e);
@@ -78,8 +79,47 @@ public class MstMethodAspectJ implements Ordered{
         }
     }
 
-    //通知服务器并等待回复
-    private void notifyAndWait(String token, String msg) {
+    /**
+     * 校验是已经在分布式事务中执行
+     * @return
+     * @throws Throwable
+     */
+    private boolean prevCheck() throws Throwable {
+        if (!NetClient.start || NetClient.socketClient == null || !NetClient.socketClient.channel().isActive()) {
+            throw new RuntimeException("netclient start fail,please make sure netclient start");
+        }
+        //先从内存中获取是否存在，比如这里同一个服务中不同方法调用
+        String token = MstAttributeHolder.getMstToken();
+        if (token != null) {
+            return true;
+        }
+        if (MstDbConnectionLimit.isMaxDbNumber()) {
+            throw new RuntimeException("mst db connection user out,please later try");
+        }
+        return false;
+    }
+
+    /**
+     * 注册token到本地和协调器并执行方法，并发送提交命令
+     * @param joinPoint
+     * @param token
+     * @return
+     * @throws Throwable
+     */
+    public static Object registerAndInvokeMethod(ProceedingJoinPoint joinPoint, String token) throws Throwable {
+        MstAttributeHolder.putMstToken(token);
+//        notifyAndWait(token, MstMessageBuilder.sendRegister(token));
+        Object value = joinPoint.proceed();
+        NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendCommit(token));
+        return value;
+    }
+
+    /**
+     * 进行阻塞等待协调器唤醒
+     * @param token
+     * @param msg
+     */
+    public static void notifyAndWait(String token, String msg) {
         NetClient.socketClient.writeAndFlush(msg);
         LockCondition condition = new LockCondition();
         MstAttributeHolder.putTokenAndLock(token, condition);

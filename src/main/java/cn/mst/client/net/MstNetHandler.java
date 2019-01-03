@@ -26,7 +26,7 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
 
     private Logger logger = LoggerFactory.getLogger(MstNetHandler.class);
 
-    private static Executor executor = Executors.newFixedThreadPool(10);
+    private static Executor executor = Executors.newFixedThreadPool(5);
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
@@ -44,7 +44,6 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
      * @param msg
      */
     private void handlerResponse(String msg) {
-        logger.debug(SystemConstant.PREV_LOG+msg);
         Map<Integer, String> result = MstMessageBuilder.resolverMessage(msg);
         for (Map.Entry<Integer, String> entry : result.entrySet()) {
             Integer state = entry.getKey();
@@ -61,6 +60,8 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
                     try {
                         if (dbConnection != null) {
                             dbConnection.realRollbackAndClose();
+                        }else{
+                            logger.info("----------------->invoke rollback null :"+token);
                         }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " rollback fail");

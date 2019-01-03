@@ -9,6 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -68,16 +69,30 @@ public class MstServerHandler extends SimpleChannelInboundHandler<String> {
                         rollBackFlag = !allChannelActive(ctxs);
                     }
                     if (rollBackFlag) {
-                        for (ChannelHandlerContext channel : ctxs) {
-                            channel.writeAndFlush(MstMessageBuilder.sendRollback(token));
-                        }
+                        rollback(token, ctxs);
                     } else {
-                        for (ChannelHandlerContext channel : ctxs) {
-                            channel.writeAndFlush(MstMessageBuilder.sendCommit(token));
-                        }
+                        commit(token,ctxs);
                     }
             }
         }
+    }
+
+    private void commit(String token,LinkedBlockingQueue<ChannelHandlerContext> ctxs) {
+        finalExecute(ctxs,MstMessageBuilder.sendCommit(token));
+    }
+
+    private void finalExecute(LinkedBlockingQueue<ChannelHandlerContext> ctxs, String s){
+        logger.info("------------->count:"+ctxs.size());
+        Iterator<ChannelHandlerContext> iterator = ctxs.iterator();
+        while(iterator.hasNext()){
+            ChannelHandlerContext next = iterator.next();
+            iterator.remove();
+            next.writeAndFlush(s);
+        }
+    }
+
+    private void rollback(String token, LinkedBlockingQueue<ChannelHandlerContext> ctxs) {
+        finalExecute(ctxs, MstMessageBuilder.sendRollback(token));
     }
 
     //发送提交命令时判断下当前客户端是否全部都正常，否则回滚

@@ -53,7 +53,16 @@ public class StartStrategy {
 
     public void masterVoteAndStart() {
         boolean existFlag = ZKUtils.exist(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
+        //这里表示master存在但server断开了
         if (existFlag) {
+            String data = ZKUtils.getData(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master");
+            if (data.equals(StartStrategy.getIp() + ":" + port)) {
+                //启动server内存定时清理器
+                if (!MstServerAttributeClean.isStart()) {
+                    MstServerAttributeClean.work();
+                }
+                server.start(port);
+            }
             return;
         }
         boolean flag = ZKUtils.createEphemeralNode(MstServerAttributeHolder.getZkClient(), "/" + SystemConstant.ROOT_PATH + "/" + namespace + "/master", (getIp() + ":" + port).getBytes());
