@@ -34,7 +34,6 @@ public class DbAspectJ implements Ordered{
               if(MstDbConnectionLimit.isMaxDbNumber()){
                   throw new RuntimeException("mst db connection user out,please later try");
               }
-              logger.info("---------------------------->proxy db");
               MstDbConnectionLimit.incrementDbNumber();
               Connection connection = (Connection) joinPoint.proceed();
               connection.setAutoCommit(false);
