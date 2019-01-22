@@ -60,8 +60,6 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
                     try {
                         if (dbConnection != null) {
                             dbConnection.realRollbackAndClose();
-                        }else{
-                            logger.info("----------------->invoke rollback null :"+token);
                         }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " rollback fail");
