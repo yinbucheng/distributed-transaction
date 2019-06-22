@@ -26,20 +26,22 @@ import java.util.UUID;
  **/
 @Aspect
 @Component
-public class MstMethodAspectJ implements Ordered{
-    private Logger logger = LoggerFactory.getLogger(MstMethodAspectJ.class);
+public class BeginMstMethodAspectJ implements Ordered{
+    private Logger logger = LoggerFactory.getLogger(BeginMstMethodAspectJ.class);
 
     @Around("@annotation(cn.mst.client.annotation.BeginMst)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         if (!NetClient.start || NetClient.socketClient == null) {
-            throw new RuntimeException("netclient start fail,please make sure netclient start");
+            logger.error("mst client start fail,please make sure mst client start");
+            throw new RuntimeException("mst client start fail,please make sure mst client start");
         }
-        //先从内存中获取是否存在，比如这里同一个服务中不同方法调用
+        //先从内存中获取是否存在，比如这里同一个服务中不同方法调用,A-A
         String token = MstAttributeHolder.getMstToken();
         if (token != null) {
             return joinPoint.proceed();
         }
         if(MstDbConnectionLimit.isMaxDbNumber()){
+            logger.error("mst db connection user out,please later try");
             throw new RuntimeException("mst db connection user out,please later try");
         }
 
@@ -54,6 +56,7 @@ public class MstMethodAspectJ implements Ordered{
                 return value;
             } catch (Exception e) {
                 NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendRollback(token));
+                logger.error("mst send rollback ,cause :"+e);
                 throw new RuntimeException(e);
             } finally {
                 MstAttributeHolder.removeMstToken();
@@ -70,6 +73,7 @@ public class MstMethodAspectJ implements Ordered{
             return value;
         } catch (Exception e) {
             notifyAndWait(token, MstMessageBuilder.sendRollback(token));
+            logger.error("mst send rollback,cause:"+e);
             throw new RuntimeException(e);
         } finally {
             NetClient.socketClient.writeAndFlush(MstMessageBuilder.sendFIN(token));

@@ -19,29 +19,28 @@ import java.sql.Connection;
  **/
 @Aspect
 @Component
-public class DbAspectJ implements Ordered{
+public class DbAspectJ implements Ordered {
 
     @Around("execution(java.sql.Connection *..getConnection(..))")
     public Connection proxyConnection(ProceedingJoinPoint joinPoint) throws Throwable {
-          String token = MstAttributeHolder.getMstToken();
-          if(token==null) {
-              return (Connection) joinPoint.proceed();
-          }else{
-              if(MstDbConnectionLimit.isMaxDbNumber()){
-                  throw new RuntimeException("mst db connection user out,please later try");
-              }
-              MstDbConnection connByToken = MstAttributeHolder.getConnByToken(token);
-              if(null!=connByToken){
-                  return connByToken;
-              }
-              MstDbConnectionLimit.incrementDbNumber();
-              Connection connection = (Connection) joinPoint.proceed();
-              connection.setAutoCommit(false);
-              MstDbConnection dbConnection = new MstDbConnection(connection);
-              MstAttributeHolder.putTokenAndCon(token,dbConnection);
-              RollbackCoordinator.addConn(token);
-              return dbConnection;
-          }
+        String token = MstAttributeHolder.getMstToken();
+        if (token == null) {
+            return (Connection) joinPoint.proceed();
+        }
+        if (MstDbConnectionLimit.isMaxDbNumber()) {
+            throw new RuntimeException("mst db connection user out,please later try");
+        }
+        MstDbConnection connByToken = MstAttributeHolder.getConnByToken(token);
+        if (null != connByToken) {
+            return connByToken;
+        }
+        MstDbConnectionLimit.incrementDbNumber();
+        Connection connection = (Connection) joinPoint.proceed();
+        connection.setAutoCommit(false);
+        MstDbConnection dbConnection = new MstDbConnection(connection);
+        MstAttributeHolder.putTokenAndCon(token, dbConnection);
+        RollbackCoordinator.addConn(token);
+        return dbConnection;
     }
 
 

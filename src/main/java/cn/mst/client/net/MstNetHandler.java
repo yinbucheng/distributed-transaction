@@ -57,10 +57,10 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
                     }
                     break;
                 case MstMessageBuilder.ROLLBACK:
-                    MstDbConnection dbConnection = MstAttributeHolder.removeConn(token);
+                    MstDbConnection dbRollBackConn = MstAttributeHolder.removeConn(token);
                     try {
-                        if (dbConnection != null) {
-                            dbConnection.realRollbackAndClose();
+                        if (dbRollBackConn != null) {
+                            dbRollBackConn.realRollbackAndClose();
                         }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " rollback fail");
@@ -68,10 +68,10 @@ public class MstNetHandler extends SimpleChannelInboundHandler<String> {
                     }
                     break;
                 case MstMessageBuilder.COMMIT:
-                    MstDbConnection dbConnection2 = MstAttributeHolder.removeConn(token);
+                    MstDbConnection dbCommitConn = MstAttributeHolder.removeConn(token);
                     try {
-                        if (dbConnection2 != null) {
-                            dbConnection2.realCommitAndClose();
+                        if (dbCommitConn != null) {
+                            dbCommitConn.realCommitAndClose();
                         }
                     } catch (SQLException e) {
                         logger.error(SystemConstant.PREV_LOG + token + " commit fail");

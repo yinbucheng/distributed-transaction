@@ -36,15 +36,17 @@ public class TransactionMethodAspectJ implements Ordered{
             return joinPoint.proceed();
         }
         //这里表示不同服务不同方法调用
-        token = (String) WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
+        token = WebUtils.getRequest().getHeader(SystemConstant.MST_TOKEN);
         logger.debug(SystemConstant.PREV_LOG+" get token :"+token);
         if (token == null) {
             return joinPoint.proceed();
         }
         if (!NetClient.start || NetClient.socketClient == null) {
-            throw new RuntimeException("netclient start fail,please make sure netclient start");
+            logger.error("net client start fail,please make sure net client start");
+            throw new RuntimeException("net client start fail,please make sure net client start");
         }
         if(MstDbConnectionLimit.isMaxDbNumber()){
+            logger.error("mst db connection user out,please later try");
             throw new RuntimeException("mst db connection user out,please later try");
         }
         MstAttributeHolder.putMstToken(token);
@@ -55,6 +57,7 @@ public class TransactionMethodAspectJ implements Ordered{
             return value;
         } catch (Exception e) {
             notifyAndWait(token, MstMessageBuilder.sendRollback(token));
+            logger.error("mst send rollback ,cause:"+e);
             throw new RuntimeException(e);
         } finally {
             MstAttributeHolder.removeMstToken();

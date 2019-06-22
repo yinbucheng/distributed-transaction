@@ -70,21 +70,21 @@ public class RollbackCoordinator {
     }
 
     private static void executeRollBack(LinkedBlockingQueue<String> temp) {
-        if (temp.size() != 0) {
-            Iterator<String> iterator = temp.iterator();
-            while (iterator.hasNext()) {
-                String token = iterator.next();
-                try {
-                    MstDbConnection connection = MstAttributeHolder.removeConn(token);
-                    if (connection != null) {
-                        connection.realRollbackAndClose();
-                    }
-                } catch (SQLException e) {
-                    logger.info(SystemConstant.PREV_LOG + " rollback fail");
-                    e.printStackTrace();
+        if (temp == null || temp.size() == 0)
+            return;
+        Iterator<String> iterator = temp.iterator();
+        while (iterator.hasNext()) {
+            String token = iterator.next();
+            try {
+                MstDbConnection connection = MstAttributeHolder.removeConn(token);
+                if (connection != null) {
+                    connection.realRollbackAndClose();
                 }
-                iterator.remove();
+            } catch (SQLException e) {
+                logger.info(SystemConstant.PREV_LOG + " rollback fail");
+                e.printStackTrace();
             }
+            iterator.remove();
         }
     }
 
