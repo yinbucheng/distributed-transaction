@@ -48,7 +48,7 @@ public class RollbackCoordinator {
         singleExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < Integer.MAX_VALUE; i++) {
+                for (;;) {
                     LinkedBlockingQueue<String> temp = rollbackQueue[cur];
                     executor.execute(new Runnable() {
                         @Override
