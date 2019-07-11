@@ -1,2 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.mst.client.aop.DbAspectJ,cn.mst.client.aop.FeginRequestInterceptor,cn.mst.client.aop.BeginMstMethodAspectJ,cn.mst.client.aop.TransactionMethodAspectJ,\
-cn.mst.server.base.StartStrategy,cn.mst.server.net.NetServer,cn.mst.common.config.CoreStart,cn.mst.client.net.NetClient,cn.mst.common.EnviromentUtils
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.mst.aop.TxDBAop,cn.mst.aop.FeignRequestAop,cn.mst.aop.DistributedTxAop,cn.mst.aop.NormalTxAop,\
+cn.mst.server.base.StartStrategy,cn.mst.server.net.NetServer,cn.mst.common.config.CoreStart,cn.mst.client.net.NetClient,cn.mst.utils.EnviromentUtils

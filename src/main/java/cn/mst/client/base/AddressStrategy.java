@@ -1,7 +1,7 @@
 package cn.mst.client.base;
 
-import cn.mst.client.constant.SystemConstant;
-import cn.mst.common.ZKUtils;
+import cn.mst.constant.ClientConstant;
+import cn.mst.utils.ZKUtils;
 
 /**
  * 地址解析策略
@@ -17,11 +17,11 @@ public class AddressStrategy {
      * @return
      */
     public static Object[] resolveIpAndPort(String namespace){
-       boolean flag = ZKUtils.exist(MstAttributeHolder.getZkClient(),"/"+ SystemConstant.ROOT_PATH+"/"+namespace+"/master");
+       boolean flag = ZKUtils.exist(MstAttributeHolder.getZkClient(),"/"+ ClientConstant.ROOT_PATH+"/"+namespace+"/master");
        if(!flag){
            return null;
        }
-       String content = ZKUtils.getData(MstAttributeHolder.getZkClient(),"/"+ SystemConstant.ROOT_PATH+"/"+namespace+"/master");
+       String content = ZKUtils.getData(MstAttributeHolder.getZkClient(),"/"+ ClientConstant.ROOT_PATH+"/"+namespace+"/master");
        String[] temps = content.split(":");
        Integer data = Integer.parseInt(temps[1]);
        Object[] results = new Object[2];

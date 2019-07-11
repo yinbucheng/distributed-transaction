@@ -1,11 +1,11 @@
-package cn.mst.client.constant;
+package cn.mst.constant;
 
 /**
- * @ClassName SystemConstant
+ * @ClassName ClientConstant
  * @Author buchengyin
  * @Date 2018/12/19 14:43
  **/
-public class SystemConstant {
+public class ClientConstant {
     public final static String PREV_LOG ="------------mstclient log------------->";
     public final static String SERVER_LOG ="------------mstserver log------------->";
     public final static String MST_TOKEN = "Microservice_Transaction";

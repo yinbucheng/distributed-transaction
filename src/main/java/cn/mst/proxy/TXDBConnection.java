@@ -1,6 +1,7 @@
-package cn.mst.client.base;
+package cn.mst.proxy;
 
-import cn.mst.client.constant.SystemConstant;
+import cn.mst.client.base.TXDBConnectionLimit;
+import cn.mst.constant.ClientConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,16 +11,16 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
- * @ClassName MstDbConnection
+ * @ClassName TXDBConnection
  * @Author buchengyin
  * @Date 2018/12/19 14:39
  **/
-public class MstDbConnection implements Connection {
-    private Logger logger = LoggerFactory.getLogger(MstDbConnection.class);
+public class TXDBConnection implements Connection {
+    private Logger logger = LoggerFactory.getLogger(TXDBConnection.class);
     private Connection connection;
     private volatile boolean used = false;
 
-    public MstDbConnection(Connection connection) {
+    public TXDBConnection(Connection connection) {
         this.connection = connection;
     }
 
@@ -55,17 +56,17 @@ public class MstDbConnection implements Connection {
 
     @Override
     public void commit() throws SQLException {
-        logger.info(SystemConstant.PREV_LOG + " invoke commit but do nothing");
+        logger.info(ClientConstant.PREV_LOG + " invoke commit but do nothing");
     }
 
     @Override
     public void rollback() throws SQLException {
-        logger.info(SystemConstant.PREV_LOG + " invoke rollback but do nothing");
+        logger.info(ClientConstant.PREV_LOG + " invoke rollback but do nothing");
     }
 
     @Override
     public void close() throws SQLException {
-        logger.info(SystemConstant.PREV_LOG + " invoke close but do nothing");
+        logger.info(ClientConstant.PREV_LOG + " invoke close but do nothing");
     }
 
     @Override
@@ -297,10 +298,10 @@ public class MstDbConnection implements Connection {
     public void realCommitAndClose() throws SQLException {
         if(!used) {
             used = true;
-            logger.info(SystemConstant.PREV_LOG+" official commit and close");
+            logger.info(ClientConstant.PREV_LOG+" official commit and close");
             connection.commit();
             connection.close();
-            MstDbConnectionLimit.decrementDbNumber();
+            TXDBConnectionLimit.decrementDbNumber();
         }
     }
 
@@ -308,10 +309,10 @@ public class MstDbConnection implements Connection {
     public void realRollbackAndClose() throws SQLException {
         if(!used){
             used = true;
-            logger.info(SystemConstant.PREV_LOG+" official rollback and close");
+            logger.info(ClientConstant.PREV_LOG+" official rollback and close");
             connection.rollback();
             connection.close();
-            MstDbConnectionLimit.decrementDbNumber();
+            TXDBConnectionLimit.decrementDbNumber();
         }
 
     }

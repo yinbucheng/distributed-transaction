@@ -1,8 +1,8 @@
-package cn.mst.client.aop;
+package cn.mst.aop;
 
-import cn.mst.client.base.MstAttributeHolder;
-import cn.mst.client.constant.SystemConstant;
-import cn.mst.common.WebUtils;
+import cn.mst.client.holder.UUIDHolder;
+import cn.mst.utils.WebUtils;
+import cn.mst.constant.TransferConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
@@ -18,15 +18,15 @@ import java.util.Enumeration;
  * @Date 2018/12/19 14:56
  **/
 @Component
-public class FeginRequestInterceptor implements RequestInterceptor {
-    private Logger logger = LoggerFactory.getLogger(FeginRequestInterceptor.class);
+public class FeignRequestAop implements RequestInterceptor {
+    private Logger logger = LoggerFactory.getLogger(FeignRequestAop.class);
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        String token = MstAttributeHolder.getMstToken();
-        logger.debug(SystemConstant.PREV_LOG+" send remote service token:"+token);
+        String token = UUIDHolder.getUUID();
         if (token != null) {
-            requestTemplate.header(SystemConstant.MST_TOKEN, token);
+            logger.debug(" send remote service token:"+token);
+            requestTemplate.header(TransferConstant.MST_TOKEN, token);
         }
 
         HttpServletRequest request = WebUtils.getRequest();

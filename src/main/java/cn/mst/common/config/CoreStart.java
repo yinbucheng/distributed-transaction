@@ -1,13 +1,9 @@
 package cn.mst.common.config;
 
 import cn.mst.client.base.AddressStrategy;
-import cn.mst.client.base.MstAttributeHolder;
 import cn.mst.client.base.RollbackCoordinator;
-import cn.mst.client.net.NetClient;
-import cn.mst.common.InitOpertion;
-import cn.mst.common.ZKUtils;
-import cn.mst.server.base.MstServerAttributeHolder;
-import cn.mst.server.base.StartStrategy;
+import cn.mst.utils.InitOpertion;
+import cn.mst.utils.ZKUtils;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

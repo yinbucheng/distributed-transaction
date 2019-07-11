@@ -1,9 +1,10 @@
-package cn.mst.client.aop;
+package cn.mst.aop;
 
-import cn.mst.client.base.MstAttributeHolder;
-import cn.mst.client.base.MstDbConnection;
-import cn.mst.client.base.MstDbConnectionLimit;
+import cn.mst.client.holder.TXDBHolder;
+import cn.mst.proxy.MSTDBConnection;
+import cn.mst.client.base.TXDBConnectionLimit;
 import cn.mst.client.base.RollbackCoordinator;
+import cn.mst.client.holder.UUIDHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,26 +20,26 @@ import java.sql.Connection;
  **/
 @Aspect
 @Component
-public class DbAspectJ implements Ordered {
+public class TxDBAop implements Ordered {
 
     @Around("execution(java.sql.Connection *..getConnection(..))")
     public Connection proxyConnection(ProceedingJoinPoint joinPoint) throws Throwable {
-        String token = MstAttributeHolder.getMstToken();
+        String token = UUIDHolder.getUUID();
         if (token == null) {
             return (Connection) joinPoint.proceed();
         }
-        if (MstDbConnectionLimit.isMaxDbNumber()) {
+        if (TXDBConnectionLimit.isMaxDbNumber()) {
             throw new RuntimeException("mst db connection user out,please later try");
         }
-        MstDbConnection dbConnection = MstAttributeHolder.getConnByToken(token);
+        MSTDBConnection dbConnection = TXDBHolder.getDbConnection(token);
         if (null != dbConnection) {
             return dbConnection;
         }
-        MstDbConnectionLimit.incrementDbNumber();
+        TXDBConnectionLimit.incrementDbNumber();
         Connection connection = (Connection) joinPoint.proceed();
         connection.setAutoCommit(false);
-        dbConnection = new MstDbConnection(connection);
-        MstAttributeHolder.putTokenAndCon(token, dbConnection);
+        dbConnection = new MSTDBConnection(connection);
+        TXDBHolder.putDbConnection(token, dbConnection);
         RollbackCoordinator.addConn(token);
         return dbConnection;
     }
