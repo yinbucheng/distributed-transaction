@@ -1,6 +1,8 @@
 package cn.mst.client.base;
 
-import cn.mst.client.constant.SystemConstant;
+import cn.mst.constant.ClientConstant;
+import cn.mst.client.holder.TXDBHolder;
+import cn.mst.proxy.TXDBConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * 回滚协调器
- *
+ * 回滚事务器，保证将长时间未提交的事件进行提交
  * @ClassName RollbackCoordinator
  * @Author buchengyin
  * @Date 2018/12/19 17:29
@@ -26,7 +27,6 @@ public class RollbackCoordinator {
     private static Executor executor = Executors.newFixedThreadPool(10);
     private static volatile int pre = size - 1;
     private static volatile int cur = 0;
-    private static Executor singleExecutor = Executors.newSingleThreadExecutor();
 
     static {
         for (int i = 0; i < size; i++) {
@@ -45,28 +45,28 @@ public class RollbackCoordinator {
         if (start)
             return;
         start = true;
-        singleExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                for (;;) {
-                    LinkedBlockingQueue<String> temp = rollbackQueue[cur];
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            executeRollBack(temp);
-                        }
-                    });
-                    pre = cur;
-                    cur = cur == size - 1 ? 0 : cur + 1;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        Thread thread = new Thread(() -> {
+            for (; ; ) {
+                LinkedBlockingQueue<String> temp = rollbackQueue[cur];
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        executeRollBack(temp);
                     }
+                });
+                pre = cur;
+                cur = cur == size - 1 ? 0 : cur + 1;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        });
-
+        }
+        );
+        thread.setDaemon(true);
+        thread.setName("rollback_coordinator");
+        thread.start();
     }
 
     private static void executeRollBack(LinkedBlockingQueue<String> temp) {
@@ -76,12 +76,12 @@ public class RollbackCoordinator {
         while (iterator.hasNext()) {
             String token = iterator.next();
             try {
-                MstDbConnection connection = MstAttributeHolder.removeConn(token);
+                TXDBConnection connection = TXDBHolder.remove(token);
                 if (connection != null) {
                     connection.realRollbackAndClose();
                 }
             } catch (SQLException e) {
-                logger.info(SystemConstant.PREV_LOG + " rollback fail");
+                logger.info(ClientConstant.PREV_LOG + " rollback fail");
                 e.printStackTrace();
             }
             iterator.remove();

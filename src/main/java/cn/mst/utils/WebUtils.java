@@ -1,4 +1,4 @@
-package cn.mst.common;
+package cn.mst.utils;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

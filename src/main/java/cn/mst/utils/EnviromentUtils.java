@@ -1,4 +1,4 @@
-package cn.mst.common;
+package cn.mst.utils;
 
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;

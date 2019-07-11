@@ -1,15 +1,15 @@
 package cn.mst.client.base;
 
-import cn.mst.common.EnviromentUtils;
+import cn.mst.utils.EnviromentUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @ClassName MstDbConnectionLimit
+ * @ClassName TXDBConnectionLimit
  * @Author buchengyin
  * @Date 2018/12/19 19:40
  **/
-public class MstDbConnectionLimit {
+public class TXDBConnectionLimit {
     //最大连接数量限制
     private static int max =50;
     private static AtomicInteger dbCount = new AtomicInteger(0);

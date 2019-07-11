@@ -1,6 +1,6 @@
-package cn.mst.common;
+package cn.mst.utils;
 
-import cn.mst.client.constant.SystemConstant;
+import cn.mst.constant.ClientConstant;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class ZKUtils {
             return new ZooKeeper(url, timeout, new Watcher() {
                 @Override
                 public void process(WatchedEvent watchedEvent) {
-                    logger.info(SystemConstant.SERVER_LOG+" event "+watchedEvent.getType()+" path:"+watchedEvent.getPath());
+                    logger.info(ClientConstant.SERVER_LOG+" event "+watchedEvent.getType()+" path:"+watchedEvent.getPath());
                 }
             });
         } catch (IOException e) {
@@ -36,7 +36,7 @@ public class ZKUtils {
             String result =  zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             return true;
         } catch (Exception e){
-            logger.debug(SystemConstant.PREV_LOG+e);
+            logger.debug(ClientConstant.PREV_LOG+e);
             return false;
         }
     }
@@ -46,7 +46,7 @@ public class ZKUtils {
             zk.create(path,data, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
             return true;
         } catch (Exception e){
-            logger.debug(SystemConstant.PREV_LOG+e);
+            logger.debug(ClientConstant.PREV_LOG+e);
             return false;
         }
     }
@@ -66,7 +66,7 @@ public class ZKUtils {
                 return true;
             return false;
         } catch (Exception e){
-            logger.debug(SystemConstant.PREV_LOG+e);
+            logger.debug(ClientConstant.PREV_LOG+e);
             return false;
         }
     }
