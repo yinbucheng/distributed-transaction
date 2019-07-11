@@ -1,6 +1,5 @@
 package cn.mst.common.config;
 
-import cn.mst.client.base.AddressStrategy;
 import cn.mst.client.base.RollbackCoordinator;
 import cn.mst.utils.InitOpertion;
 import cn.mst.utils.ZKUtils;

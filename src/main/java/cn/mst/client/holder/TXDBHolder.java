@@ -16,28 +16,37 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TXDBHolder {
     private static Logger logger = LoggerFactory.getLogger(TXDBHolder.class);
-    private static Map<String, TXDBConnection> dbHolder = new ConcurrentHashMap<>();
+    private static Map<String, Struct> dbHolder = new ConcurrentHashMap<>();
 
     public static void putDbConnection(String uuid, TXDBConnection dbConnection) {
-        dbHolder.put(uuid, dbConnection);
+        Struct struct = new Struct();
+        struct.startTime = System.currentTimeMillis();
+        struct.txdbConnection = dbConnection;
+        dbHolder.put(uuid, struct);
     }
 
     public static TXDBConnection getDbConnection(String uuid) {
-        return dbHolder.get(uuid);
+        Struct struct = dbHolder.get(uuid);
+        if(null ==struct){
+            logger.error("can not find struct by "+uuid);
+            return null;
+        }
+        return struct.txdbConnection;
     }
 
     public static TXDBConnection remove(String uuid) {
-        return dbHolder.remove(uuid);
+        Struct struct = dbHolder.remove(uuid);
+        return struct.txdbConnection;
     }
 
     public static void commitAndRemove(String uuid) {
-        TXDBConnection connection = dbHolder.remove(uuid);
-        if (connection == null) {
+        Struct struct = dbHolder.remove(uuid);
+        if (struct == null) {
             logger.error("get connection fail by " + uuid);
             return;
         }
         try {
-            connection.realCommitAndClose();
+            struct.txdbConnection.realCommitAndClose();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -45,15 +54,20 @@ public class TXDBHolder {
 
 
     public static void rollbackAndRemove(String uuid) {
-        TXDBConnection connection = dbHolder.remove(uuid);
-        if (connection == null) {
+        Struct struct = dbHolder.remove(uuid);
+        if (struct == null) {
             logger.error("get connection fail by " + uuid);
             return;
         }
         try {
-            connection.commit();
+            struct.txdbConnection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    static class Struct{
+        volatile long startTime;
+        volatile TXDBConnection txdbConnection;
     }
 }
