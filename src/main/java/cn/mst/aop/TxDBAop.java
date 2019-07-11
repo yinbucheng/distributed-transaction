@@ -1,7 +1,7 @@
 package cn.mst.aop;
 
 import cn.mst.client.holder.TXDBHolder;
-import cn.mst.proxy.MSTDBConnection;
+import cn.mst.proxy.TXDBConnection;
 import cn.mst.client.base.TXDBConnectionLimit;
 import cn.mst.client.base.RollbackCoordinator;
 import cn.mst.client.holder.UUIDHolder;
@@ -31,14 +31,14 @@ public class TxDBAop implements Ordered {
         if (TXDBConnectionLimit.isMaxDbNumber()) {
             throw new RuntimeException("mst db connection user out,please later try");
         }
-        MSTDBConnection dbConnection = TXDBHolder.getDbConnection(token);
+        TXDBConnection dbConnection = TXDBHolder.getDbConnection(token);
         if (null != dbConnection) {
             return dbConnection;
         }
         TXDBConnectionLimit.incrementDbNumber();
         Connection connection = (Connection) joinPoint.proceed();
         connection.setAutoCommit(false);
-        dbConnection = new MSTDBConnection(connection);
+        dbConnection = new TXDBConnection(connection);
         TXDBHolder.putDbConnection(token, dbConnection);
         RollbackCoordinator.addConn(token);
         return dbConnection;
