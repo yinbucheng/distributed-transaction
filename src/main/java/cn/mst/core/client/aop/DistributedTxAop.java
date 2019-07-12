@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class DistributedTxAop extends BaseAop implements Ordered {
     private Logger logger = LoggerFactory.getLogger(DistributedTxAop.class);
 
-    @Around("@annotation(cn.mst.annotation.BeginJTA)")
+    @Around("@annotation(cn.mst.config.annotation.BeginJTA)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         if (!ClientChannelHolder.isStart()) {
             logger.error("mst client start fail,please make sure mst client start");

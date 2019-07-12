@@ -1,7 +1,7 @@
 package cn.mst.core.client.aop;
 
 import cn.mst.core.client.holder.TXConnectionHolder;
-import cn.mst.proxy.TXDBConnection;
+import cn.mst.config.proxy.TXDBConnection;
 import cn.mst.core.client.base.TXDBConnectionLimit;
 import cn.mst.core.client.holder.UUIDHolder;
 import org.aspectj.lang.ProceedingJoinPoint;

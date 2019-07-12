@@ -2,7 +2,7 @@ package cn.mst.core.server.base;
 
 import cn.mst.constant.TransferConstant;
 import cn.mst.core.server.net.NetServer;
-import cn.mst.utils.EnviromentUtils;
+import cn.mst.common.utils.EnviromentUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;

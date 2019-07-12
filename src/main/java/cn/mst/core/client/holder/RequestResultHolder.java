@@ -2,7 +2,7 @@ package cn.mst.core.client.holder;
 
 import cn.mst.constant.TransferConstant;
 import cn.mst.model.res.TXResponse;
-import cn.mst.utils.EnviromentUtils;
+import cn.mst.common.utils.EnviromentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

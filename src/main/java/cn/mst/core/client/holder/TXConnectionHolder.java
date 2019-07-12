@@ -2,7 +2,7 @@ package cn.mst.core.client.holder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import cn.mst.proxy.TXDBConnection;
+import cn.mst.config.proxy.TXDBConnection;
 
 import java.sql.SQLException;
 import java.util.Map;

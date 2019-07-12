@@ -2,7 +2,7 @@ package cn.mst.core.client.base;
 
 import cn.mst.core.client.holder.TXConnectionHolder;
 import cn.mst.constant.TransferConstant;
-import cn.mst.utils.EnviromentUtils;
+import cn.mst.common.utils.EnviromentUtils;
 import org.springframework.boot.CommandLineRunner;
 
 import java.util.LinkedList;

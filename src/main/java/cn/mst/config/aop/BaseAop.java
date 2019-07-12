@@ -1,4 +1,4 @@
-package cn.mst.aop;
+package cn.mst.config.aop;
 
 import cn.mst.client.holder.ClientChannelHolder;
 import cn.mst.client.holder.RequestResultHolder;

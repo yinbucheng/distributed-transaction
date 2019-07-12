@@ -1,4 +1,4 @@
-package cn.mst.aop;
+package cn.mst.config.aop;
 
 import cn.mst.client.base.TXDBConnectionLimit;
 import cn.mst.constant.ClientConstant;
@@ -6,7 +6,7 @@ import cn.mst.client.holder.TXConnectionHolder;
 import cn.mst.client.holder.ClientChannelHolder;
 import cn.mst.client.holder.UUIDHolder;
 import cn.mst.common.MstMessageBuilder;
-import cn.mst.utils.WebUtils;
+import cn.mst.common.utils.WebUtils;
 import cn.mst.model.req.TXRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 public class DistributedTxAop extends BaseAop implements Ordered {
     private Logger logger = LoggerFactory.getLogger(DistributedTxAop.class);
 
-    @Around("@annotation(cn.mst.annotation.BeginJTA)")
+    @Around("@annotation(cn.mst.config.annotation.BeginJTA)")
     public Object invokeMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         if (!ClientChannelHolder.isStart()) {
             logger.error("mst client start fail,please make sure mst client start");

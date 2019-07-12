@@ -1,6 +1,6 @@
 package cn.mst.core.client.base;
 
-import cn.mst.utils.EnviromentUtils;
+import cn.mst.common.utils.EnviromentUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

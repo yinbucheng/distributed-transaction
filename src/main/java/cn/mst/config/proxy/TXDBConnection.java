@@ -1,4 +1,4 @@
-package cn.mst.proxy;
+package cn.mst.config.proxy;
 
 import cn.mst.core.client.base.TXDBConnectionLimit;
 import org.slf4j.Logger;

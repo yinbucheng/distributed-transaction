@@ -1,7 +1,7 @@
-package cn.mst.aop;
+package cn.mst.config.aop;
 
 import cn.mst.client.holder.UUIDHolder;
-import cn.mst.utils.WebUtils;
+import cn.mst.common.utils.WebUtils;
 import cn.mst.constant.TransferConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
