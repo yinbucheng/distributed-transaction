@@ -52,7 +52,7 @@ public class NetServerHandler extends SimpleChannelInboundHandler<String> {
         } else if (request.getType() == TransferConstant.COMMIT) {
             logger.info("accept client commit command " + request.getUuid());
         } else if (request.getType() == TransferConstant.FIN) {
-            logger.info("accept client fin command " + request.getUuid());
+            logger.info("accept client FIN command " + request.getUuid());
             executeCommitOrRollback(request.getUuid());
         }
     }

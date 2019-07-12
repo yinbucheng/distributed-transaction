@@ -1,9 +1,8 @@
 package cn.mst.aop;
 
-import cn.mst.client.holder.TXDBHolder;
+import cn.mst.client.holder.TXConnectionHolder;
 import cn.mst.proxy.TXDBConnection;
 import cn.mst.client.base.TXDBConnectionLimit;
-import cn.mst.client.base.RollbackCoordinator;
 import cn.mst.client.holder.UUIDHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -31,7 +30,7 @@ public class TxDBAop implements Ordered {
         if (TXDBConnectionLimit.isMaxDbNumber()) {
             throw new RuntimeException("mst db connection user out,please later try");
         }
-        TXDBConnection dbConnection = TXDBHolder.getDbConnection(token);
+        TXDBConnection dbConnection = TXConnectionHolder.getDbConnection(token);
         if (null != dbConnection) {
             return dbConnection;
         }
@@ -39,7 +38,7 @@ public class TxDBAop implements Ordered {
         Connection connection = (Connection) joinPoint.proceed();
         connection.setAutoCommit(false);
         dbConnection = new TXDBConnection(connection);
-        TXDBHolder.putDbConnection(token, dbConnection);
+        TXConnectionHolder.putDbConnection(token, dbConnection);
         RollbackCoordinator.addConn(token);
         return dbConnection;
     }

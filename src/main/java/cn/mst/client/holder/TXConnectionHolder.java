@@ -10,12 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author ：yinchong
  * @create ：2019/7/11 13:45
- * @description：mst改造后的数据库持有者
+ * @description：分布式改造连接持有器
  * @modified By：
  * @version:
  */
-public class TXDBHolder {
-    private static Logger logger = LoggerFactory.getLogger(TXDBHolder.class);
+public class TXConnectionHolder {
+    private static Logger logger = LoggerFactory.getLogger(TXConnectionHolder.class);
     private static Map<String, Struct> dbHolder = new ConcurrentHashMap<>();
 
     public static void putDbConnection(String uuid, TXDBConnection dbConnection) {
@@ -69,5 +69,12 @@ public class TXDBHolder {
     static class Struct{
         volatile long startTime;
         volatile TXDBConnection txdbConnection;
+        //kafka改造连接
+
+        //redis改造连接
+
+        //mongodb改造连接
+
+        //等等
     }
 }

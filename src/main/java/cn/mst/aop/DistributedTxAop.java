@@ -2,7 +2,7 @@ package cn.mst.aop;
 
 import cn.mst.client.base.TXDBConnectionLimit;
 import cn.mst.constant.ClientConstant;
-import cn.mst.client.holder.TXDBHolder;
+import cn.mst.client.holder.TXConnectionHolder;
 import cn.mst.client.holder.ClientChannelHolder;
 import cn.mst.client.holder.UUIDHolder;
 import cn.mst.common.MstMessageBuilder;
@@ -66,7 +66,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
             throw new RuntimeException(e);
         } finally {
             UUIDHolder.remove();
-            TXDBHolder.remove(token);
+            TXConnectionHolder.remove(token);
         }
     }
 
@@ -86,7 +86,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
         } finally {
             ClientChannelHolder.writeAndFlush(TXRequest.finalTx(token));
             UUIDHolder.remove();
-            TXDBHolder.remove(token);
+            TXConnectionHolder.remove(token);
         }
     }
 
