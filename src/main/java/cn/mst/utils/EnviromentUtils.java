@@ -22,4 +22,13 @@ public class EnviromentUtils implements EnvironmentAware {
     public static String getProperties(String key){
         return environment.getProperty(key);
     }
+
+    public static int getIntValue(String key,int defaultValue){
+        String value = environment.getProperty(key);
+        if(null==value){
+            return defaultValue;
+        }
+
+        return Integer.parseInt(value);
+    }
 }

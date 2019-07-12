@@ -1,8 +1,8 @@
-package cn.mst.client.net;
+package cn.mst.core.client.net;
 
-import cn.mst.client.holder.ClientChannelHolder;
-import cn.mst.client.holder.RequestResultHolder;
-import cn.mst.client.holder.TXConnectionHolder;
+import cn.mst.core.client.holder.ClientChannelHolder;
+import cn.mst.core.client.holder.RequestResultHolder;
+import cn.mst.core.client.holder.TXConnectionHolder;
 import cn.mst.constant.TransferConstant;
 import cn.mst.model.res.TXResponse;
 import com.alibaba.fastjson.JSON;
@@ -39,11 +39,13 @@ public class NetClientHandler extends SimpleChannelInboundHandler<String> {
         TXResponse response = JSON.parseObject(msg, TXResponse.class);
         String uuid = response.getUuid();
         if (response.getStatus() == TransferConstant.ACK) {
+            logger.info("accept server ack command uuid:" + response.getUuid());
             RequestResultHolder.resetResult(uuid, response);
         } else if (response.getStatus() == TransferConstant.COMMIT) {
-            logger.info("accept server commit command");
+            logger.info("accept server commit command uuid:" + response.getUuid());
             TXConnectionHolder.commitAndRemove(response.getUuid());
         } else if (response.getStatus() == TransferConstant.ROLLBACK) {
+            logger.info("accept server rollback command uuid:" + response.getUuid());
             TXConnectionHolder.rollbackAndRemove(response.getUuid());
         }
     }

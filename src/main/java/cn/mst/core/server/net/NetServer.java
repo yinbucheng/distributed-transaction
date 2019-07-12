@@ -1,4 +1,4 @@
-package cn.mst.server.net;
+package cn.mst.core.server.net;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -47,7 +47,7 @@ public class NetServer {
             ChannelFuture future = bootstrap.bind(port);
             future.addListener((param)->{
                 if (param.isSuccess()){
-                    logger.info("start server ack in port "+port);
+                    logger.info("start server success in port "+port);
                 }else{
                     logger.error("start server fail in port "+port);
                 }

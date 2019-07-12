@@ -1,4 +1,4 @@
-package cn.mst.client.interceptor;
+package cn.mst.core.client.interceptor;
 
 import com.mysql.jdbc.*;
 import org.slf4j.Logger;

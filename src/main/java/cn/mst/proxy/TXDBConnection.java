@@ -1,7 +1,6 @@
 package cn.mst.proxy;
 
-import cn.mst.client.base.TXDBConnectionLimit;
-import cn.mst.constant.ClientConstant;
+import cn.mst.core.client.base.TXDBConnectionLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,17 +55,17 @@ public class TXDBConnection implements Connection {
 
     @Override
     public void commit() throws SQLException {
-        logger.info(ClientConstant.PREV_LOG + " invoke commit but do nothing");
+        logger.info(" invoke commit but do nothing");
     }
 
     @Override
     public void rollback() throws SQLException {
-        logger.info(ClientConstant.PREV_LOG + " invoke rollback but do nothing");
+        logger.info(" invoke rollback but do nothing");
     }
 
     @Override
     public void close() throws SQLException {
-        logger.info(ClientConstant.PREV_LOG + " invoke close but do nothing");
+        logger.info(" invoke close but do nothing");
     }
 
     @Override
@@ -296,9 +295,9 @@ public class TXDBConnection implements Connection {
 
     //正式提交
     public void realCommitAndClose() throws SQLException {
-        if(!used) {
+        if (!used) {
             used = true;
-            logger.info(ClientConstant.PREV_LOG+" official commit and close");
+            logger.info(" official commit and close");
             connection.commit();
             connection.close();
             TXDBConnectionLimit.decrementDbNumber();
@@ -307,9 +306,9 @@ public class TXDBConnection implements Connection {
 
     //正式回滚
     public void realRollbackAndClose() throws SQLException {
-        if(!used){
+        if (!used) {
             used = true;
-            logger.info(ClientConstant.PREV_LOG+" official rollback and close");
+            logger.info(" official rollback and close");
             connection.rollback();
             connection.close();
             TXDBConnectionLimit.decrementDbNumber();

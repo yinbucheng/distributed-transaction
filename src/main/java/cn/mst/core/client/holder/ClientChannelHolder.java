@@ -1,4 +1,4 @@
-package cn.mst.client.holder;
+package cn.mst.core.client.holder;
 
 
 import com.alibaba.fastjson.JSON;

@@ -1,6 +1,8 @@
-package cn.mst.client.holder;
+package cn.mst.core.client.holder;
 
+import cn.mst.constant.TransferConstant;
 import cn.mst.model.res.TXResponse;
+import cn.mst.utils.EnviromentUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,8 @@ public abstract class RequestResultHolder {
         Struct struct = new Struct();
         resultHolder.put(uuid, struct);
         try {
-            struct.countDownLatch.await(20, TimeUnit.SECONDS);
+            int timeout = EnviromentUtils.getIntValue(TransferConstant.TX_EXECUTE_TIMEOUT, TransferConstant.DEFAULT_TX_EXECUTE_TIMEOUT);
+            struct.countDownLatch.await(timeout, TimeUnit.SECONDS);
             return struct.result;
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -38,11 +41,11 @@ public abstract class RequestResultHolder {
     }
 
     public static void resetResult(String uuid, TXResponse result) {
-       Struct struct = resultHolder.get(uuid);
-       if(null==struct){
-           logger.error("not find struct by "+uuid);
-           return;
-       }
+        Struct struct = resultHolder.get(uuid);
+        if (null == struct) {
+            logger.error("not find struct by " + uuid);
+            return;
+        }
         struct.result = result;
         struct.countDownLatch.countDown();
     }

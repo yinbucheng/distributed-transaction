@@ -1,6 +1,6 @@
-package cn.mst.client.net;
+package cn.mst.core.client.net;
 
-import cn.mst.client.holder.ClientChannelHolder;
+import cn.mst.core.client.holder.ClientChannelHolder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;

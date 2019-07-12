@@ -1,4 +1,4 @@
-package cn.mst.client.base;
+package cn.mst.core.client.base;
 
 import cn.mst.utils.EnviromentUtils;
 

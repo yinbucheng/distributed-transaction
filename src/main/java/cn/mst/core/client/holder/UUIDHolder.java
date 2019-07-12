@@ -1,4 +1,4 @@
-package cn.mst.client.holder;
+package cn.mst.core.client.holder;
 
 import java.util.UUID;
 
