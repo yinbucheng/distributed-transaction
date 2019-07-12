@@ -8,6 +8,7 @@ package cn.bucheng.registry;
  * @version:
  */
 public class StatusConstant {
+
     //这个目录记录常用分布式事务的实例
     public static final String INSTANCE = "instance";
     //这里记录分布式事务协调器
