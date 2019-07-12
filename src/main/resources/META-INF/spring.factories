@@ -1,2 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.mst.core.client.aop.TxDBAop,cn.mst.core.client.aop.FeignRequestAop,cn.mst.core.client.aop.DistributedTxAop,cn.mst.core.client.aop.NormalTxAop,\
-cn.mst.core.client.server.base.StartStrategy,cn.mst.core.server.net.NetServer,cn.mst.common.config.CoreStart,cn.mst.core.client.net.NetClient,cn.mst.common.utils.EnviromentUtils
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=cn.bucheng.core.aop.TxDBAop,cn.bucheng.core.aop.FeignRequestAop,cn.bucheng.core.aop.DistributedTxAop,cn.bucheng.core.aop.NormalTxAop,\
+cn.bucheng.core.client.server.base.StartStrategy,cn.bucheng.distributedserver.net.NetServer,cn.bucheng.common.config.CoreStart,cn.bucheng.core.net.NetClient,cn.bucheng.common.utils.EnvironmentUtils
