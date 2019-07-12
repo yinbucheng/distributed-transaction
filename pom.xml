@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>cn.bucheng</groupId>
-    <artifactId>bucheng</artifactId>
+    <artifactId>distributed transaction</artifactId>
     <version>1.5.6</version>
     <name>distributed transaction</name>
     <description>distributed transaction</description>
