@@ -19,7 +19,7 @@ public class EnvironmentUtils implements EnvironmentAware {
        return  environment.getProperty(key,clazz);
     }
 
-    public static String getProperties(String key){
+    public static String getProperty(String key){
         return environment.getProperty(key);
     }
 
