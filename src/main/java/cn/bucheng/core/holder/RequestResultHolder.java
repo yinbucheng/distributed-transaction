@@ -1,6 +1,6 @@
 package cn.bucheng.core.holder;
 
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import cn.bucheng.model.res.TXResponse;
 import cn.bucheng.common.utils.EnvironmentUtils;
 import org.slf4j.Logger;

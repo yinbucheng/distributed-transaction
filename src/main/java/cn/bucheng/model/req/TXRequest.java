@@ -1,6 +1,6 @@
 package cn.bucheng.model.req;
 
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 
 import java.io.Serializable;
 

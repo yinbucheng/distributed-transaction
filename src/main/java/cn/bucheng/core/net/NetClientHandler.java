@@ -3,7 +3,7 @@ package cn.bucheng.core.net;
 import cn.bucheng.core.holder.ClientChannelHolder;
 import cn.bucheng.core.holder.RequestResultHolder;
 import cn.bucheng.core.holder.TXConnectionHolder;
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import cn.bucheng.model.res.TXResponse;
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,8 +13,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @author ：yinchong
@@ -26,7 +25,14 @@ import java.util.concurrent.Executors;
 public class NetClientHandler extends SimpleChannelInboundHandler<String> {
     private static Logger logger = LoggerFactory.getLogger(NetClientHandler.class);
 
-    private Executor executor = Executors.newFixedThreadPool(3);
+    private static Executor executor = new ThreadPoolExecutor(10, 50, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(200), new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r);
+            thread.setName("distribute tx client handler thread");
+            return thread;
+        }
+    });
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {

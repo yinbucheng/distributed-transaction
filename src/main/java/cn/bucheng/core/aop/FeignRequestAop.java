@@ -2,7 +2,7 @@ package cn.bucheng.core.aop;
 
 import cn.bucheng.common.utils.WebUtils;
 import cn.bucheng.core.holder.XIDHolder;
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;

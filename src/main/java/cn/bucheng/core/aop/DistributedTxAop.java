@@ -1,7 +1,7 @@
 package cn.bucheng.core.aop;
 
 import cn.bucheng.common.utils.WebUtils;
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import cn.bucheng.core.base.TXDBConnectionLimit;
 import cn.bucheng.core.holder.ClientChannelHolder;
 import cn.bucheng.core.holder.TXConnectionHolder;

@@ -2,7 +2,7 @@ package cn.bucheng.config.aop;
 
 import cn.bucheng.client.holder.UUIDHolder;
 import cn.bucheng.common.utils.WebUtils;
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;

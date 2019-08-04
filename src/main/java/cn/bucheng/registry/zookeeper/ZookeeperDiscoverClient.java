@@ -1,6 +1,6 @@
 package cn.bucheng.registry.zookeeper;
 
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import cn.bucheng.registry.DefaultServiceInstance;
 import cn.bucheng.registry.DiscoverClient;
 import cn.bucheng.registry.ServiceInstance;

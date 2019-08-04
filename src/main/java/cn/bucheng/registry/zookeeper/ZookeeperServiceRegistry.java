@@ -1,6 +1,6 @@
 package cn.bucheng.registry.zookeeper;
 
-import cn.bucheng.constant.TransferConstant;
+import cn.bucheng.common.constant.TransferConstant;
 import cn.bucheng.registry.ServiceInstance;
 import cn.bucheng.registry.ServiceRegistry;
 import org.apache.curator.framework.CuratorFramework;

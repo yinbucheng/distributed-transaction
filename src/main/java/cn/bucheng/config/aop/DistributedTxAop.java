@@ -1,7 +1,7 @@
 package cn.bucheng.config.aop;
 
 import cn.bucheng.client.base.TXDBConnectionLimit;
-import cn.bucheng.constant.ClientConstant;
+import cn.bucheng.common.utils.constant.ClientConstant;
 import cn.bucheng.client.holder.TXConnectionHolder;
 import cn.bucheng.client.holder.ClientChannelHolder;
 import cn.bucheng.client.holder.UUIDHolder;
