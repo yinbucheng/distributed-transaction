@@ -7,10 +7,4 @@ public interface ServiceRegistry {
     void deregister(ServiceInstance instance);
     //关闭
     void close();
-
-    //参与选举leader，如果成功选择为voteLeader返回true，失败返回false
-    boolean voteLeader(ServiceInstance instance);
-
-    //监控leader
-    void monitorLeader(ServiceInstance instance);
 }

@@ -1,6 +1,7 @@
 package cn.bucheng.core.aop;
 
-import cn.bucheng.core.holder.UUIDHolder;
+import cn.bucheng.common.utils.WebUtils;
+import cn.bucheng.core.holder.XIDHolder;
 import cn.bucheng.constant.TransferConstant;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -17,15 +18,16 @@ import java.util.Enumeration;
  * @Date 2018/12/19 14:56
  **/
 @Component
+@SuppressWarnings("all")
 public class FeignRequestAop implements RequestInterceptor {
     private Logger logger = LoggerFactory.getLogger(FeignRequestAop.class);
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        String token = UUIDHolder.getUUID();
+        String token = XIDHolder.getXID();
         if (token != null) {
             logger.debug(" send remote service token:"+token);
-            requestTemplate.header(TransferConstant.MST_TOKEN, token);
+            requestTemplate.header(TransferConstant.XID_TOKEN, token);
         }
 
         HttpServletRequest request = WebUtils.getRequest();

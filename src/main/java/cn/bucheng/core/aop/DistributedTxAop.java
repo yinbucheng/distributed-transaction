@@ -1,9 +1,11 @@
 package cn.bucheng.core.aop;
 
+import cn.bucheng.common.utils.WebUtils;
+import cn.bucheng.constant.TransferConstant;
 import cn.bucheng.core.base.TXDBConnectionLimit;
 import cn.bucheng.core.holder.ClientChannelHolder;
 import cn.bucheng.core.holder.TXConnectionHolder;
-import cn.bucheng.core.holder.UUIDHolder;
+import cn.bucheng.core.holder.XIDHolder;
 import cn.bucheng.model.req.TXRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
  **/
 @Aspect
 @Component
+@SuppressWarnings("all")
 public class DistributedTxAop extends BaseAop implements Ordered {
     private Logger logger = LoggerFactory.getLogger(DistributedTxAop.class);
 
@@ -32,7 +35,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
             throw new RuntimeException("mst client start fail,please make sure mst client start");
         }
         //先从内存中获取是否存在，比如这里同一个服务中不同方法调用,A-A
-        String token = UUIDHolder.getUUID();
+        String token = XIDHolder.getXID();
         if (token != null) {
             return joinPoint.proceed();
         }
@@ -42,7 +45,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
         }
 
         //再从请求头中获取是否存在，这里表示不同服务调用A-B中不同方法
-        token = WebUtils.getRequest().getHeader(ClientConstant.MST_TOKEN);
+        token = WebUtils.getRequest().getHeader(TransferConstant.XID_TOKEN);
         if (token != null) {
             return joinExistDistributeTx(joinPoint, token);
         }
@@ -62,7 +65,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
             logger.error("mst send rollback ,cause :" + e);
             throw new RuntimeException(e);
         } finally {
-            UUIDHolder.remove();
+            XIDHolder.remove();
             TXConnectionHolder.remove(token);
         }
     }
@@ -70,7 +73,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
     //新的分布式事务开始
     private Object newDistributeTx(ProceedingJoinPoint joinPoint) throws Throwable {
         String token;
-        token = UUIDHolder.createAndGetUUID();
+        token = XIDHolder.createAndGetXID();
         try {
             notifyServer(token, TXRequest.registerTx(token));
             Object value = joinPoint.proceed();
@@ -82,7 +85,7 @@ public class DistributedTxAop extends BaseAop implements Ordered {
             throw new RuntimeException(e);
         } finally {
             ClientChannelHolder.writeAndFlush(TXRequest.finalTx(token));
-            UUIDHolder.remove();
+            XIDHolder.remove();
             TXConnectionHolder.remove(token);
         }
     }

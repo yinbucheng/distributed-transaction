@@ -12,24 +12,45 @@ public class DefaultServiceInstance implements ServiceInstance {
 
     private final int port;
 
-    private final boolean secure;
+    private final String version;
+
+    private final int state;
+
+    private final String leaderName;
 
     private final Map<String, String> metadata;
 
-    public DefaultServiceInstance(String serviceId, String host, int port, boolean secure,
+    @Override
+    public String getVersion() {
+        return version;
+    }
+
+
+    @Override
+    public int getState() {
+        return state;
+    }
+
+    public DefaultServiceInstance(String serviceId, String host, int port, String version, int state,String leaderName,
                                   Map<String, String> metadata) {
         this.serviceId = serviceId;
         this.host = host;
         this.port = port;
-        this.secure = secure;
+        this.version = version;
         this.metadata = metadata;
+        this.state = state;
+        this.leaderName = leaderName;
     }
 
     public DefaultServiceInstance(String serviceId, String host, int port,
-                                  boolean secure) {
-        this(serviceId, host, port, secure, new LinkedHashMap<String, String>());
+                                  String version, int state,String leaderName) {
+        this(serviceId, host, port, version, state, leaderName,new LinkedHashMap<String, String>());
     }
 
+    @Override
+    public String getLeaderName() {
+        return leaderName;
+    }
 
     @Override
     public Map<String, String> getMetadata() {
@@ -59,7 +80,9 @@ public class DefaultServiceInstance implements ServiceInstance {
                 "serviceId='" + serviceId + '\'' +
                 ", host='" + host + '\'' +
                 ", port=" + port +
-                ", secure=" + secure +
+                ", version=" + version +
+                ", state=" + state +
+                ", leaderName=" + leaderName +
                 ", metadata=" + metadata +
                 '}';
     }
@@ -70,14 +93,15 @@ public class DefaultServiceInstance implements ServiceInstance {
         if (o == null || getClass() != o.getClass()) return false;
         DefaultServiceInstance that = (DefaultServiceInstance) o;
         return port == that.port &&
-                secure == that.secure &&
+                version == that.version &&
                 Objects.equals(serviceId, that.serviceId) &&
-                Objects.equals(host, that.host) &&
+                Objects.equals(host, that.host) && Objects.equals(state, that.state) &&
+                Objects.equals(leaderName,that.getLeaderName())&&
                 Objects.equals(metadata, that.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(serviceId, host, port, secure, metadata);
+        return Objects.hash(serviceId, host, port, version, metadata);
     }
 }

@@ -9,6 +9,8 @@ public interface ServiceInstance {
 	 */
 	String getServiceId();
 
+	String getLeaderName();
+
 	/**
 	 * @return the hostname of the registered ServiceInstance
 	 */
@@ -18,6 +20,10 @@ public interface ServiceInstance {
 	 * @return the port of the registered ServiceInstance
 	 */
 	int getPort();
+
+	String getVersion();
+
+	int getState();
 
 
 	/**

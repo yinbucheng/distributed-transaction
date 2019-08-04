@@ -3,7 +3,7 @@ package cn.bucheng.core.aop;
 import cn.bucheng.core.holder.TXConnectionHolder;
 import cn.bucheng.config.proxy.TXDBConnection;
 import cn.bucheng.core.base.TXDBConnectionLimit;
-import cn.bucheng.core.holder.UUIDHolder;
+import cn.bucheng.core.holder.XIDHolder;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,7 +23,7 @@ public class TxDBAop implements Ordered {
 
     @Around("execution(java.sql.Connection *..getConnection(..))")
     public Connection proxyConnection(ProceedingJoinPoint joinPoint) throws Throwable {
-        String token = UUIDHolder.getUUID();
+        String token = XIDHolder.getXID();
         if (token == null) {
             return (Connection) joinPoint.proceed();
         }

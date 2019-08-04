@@ -11,11 +11,7 @@ import java.util.List;
  * @version:
  */
 public interface DiscoverClient {
-    //获取所有服务
-    List<String> getServices();
-    //通过服务id获取所有的实例
-    List<ServiceInstance> getInstances(String serviceId);
     //获取leader
-    ServiceInstance getLeader();
+    ServiceInstance getLeader(String leaderName);
 
 }

@@ -30,5 +30,10 @@ public class TransferConstant {
     //默认启动的端口步长
     public static int STEP_PORT = 33;
 
-    public static final String MST_SERVER_PORT = "mst.server.port";
+    public static final int EPHEMERAL = 0;
+    public static final int PERSISTENT = 1;
+
+    public static final String VERSION = "v1.0.0";
+
+    public static final String XID_TOKEN ="tx_xid_token";
 }
